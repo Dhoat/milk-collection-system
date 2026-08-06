@@ -33,4 +33,12 @@ class Village extends Model
     {
         return $this->hasMany(Farmer::class);
     }
+
+    /**
+     * Get the milk receiving records for this village.
+     */
+    public function milkReceivings(): HasMany
+    {
+        return $this->hasMany(MilkReceiving::class);
+    }
 }
