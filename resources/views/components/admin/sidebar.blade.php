@@ -79,7 +79,7 @@
         <div class="space-y-1.5">
             <h3 class="text-xs font-semibold tracking-wider text-slate-400 uppercase px-3 mb-2">{{ __('Operations') }}</h3>
             
-            <x-admin.nav-item route="#" disabled="true" badge="Soon">
+            <x-admin.nav-item route="milk-receivings.index" active="milk-receivings.*">
                 <x-slot name="icon">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                 </x-slot>
