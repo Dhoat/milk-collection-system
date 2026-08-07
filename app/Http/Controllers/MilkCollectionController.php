@@ -7,6 +7,7 @@ use App\Models\MilkCollection;
 use App\Models\Village;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -17,6 +18,8 @@ class MilkCollectionController extends Controller
      */
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', MilkCollection::class);
+
         $search = $request->input('search');
         $villageId = $request->input('village_id');
         $farmerId = $request->input('farmer_id');
@@ -64,6 +67,8 @@ class MilkCollectionController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('create', MilkCollection::class);
+
         // Only active villages and active farmers can register new collections
         $villages = Village::where('status', true)->orderBy('name')->get();
         $farmers = Farmer::where('status', true)->with('village')->orderBy('name')->get();
@@ -76,6 +81,8 @@ class MilkCollectionController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Gate::authorize('create', MilkCollection::class);
+
         $validated = $request->validate([
             'farmer_id' => [
                 'required',
@@ -116,6 +123,8 @@ class MilkCollectionController extends Controller
      */
     public function show(MilkCollection $milkCollection): View
     {
+        Gate::authorize('view', $milkCollection);
+
         $milkCollection->load(['farmer.village']);
 
         return view('milk_collections.show', compact('milkCollection'));
@@ -126,6 +135,8 @@ class MilkCollectionController extends Controller
      */
     public function edit(MilkCollection $milkCollection): View
     {
+        Gate::authorize('update', $milkCollection);
+
         $milkCollection->load(['farmer.village']);
 
         // Load all villages and farmers to support historical records even if inactive
@@ -140,6 +151,8 @@ class MilkCollectionController extends Controller
      */
     public function update(Request $request, MilkCollection $milkCollection): RedirectResponse
     {
+        Gate::authorize('update', $milkCollection);
+
         $validated = $request->validate([
             'farmer_id' => [
                 'required',
@@ -181,6 +194,8 @@ class MilkCollectionController extends Controller
      */
     public function destroy(MilkCollection $milkCollection): RedirectResponse
     {
+        Gate::authorize('delete', $milkCollection);
+
         $milkCollection->delete();
 
         return redirect()->route('milk-collections.index')

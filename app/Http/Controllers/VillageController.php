@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Village;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -15,6 +16,8 @@ class VillageController extends Controller
      */
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', Village::class);
+
         $search = $request->input('search');
 
         $villages = Village::query()
@@ -34,6 +37,8 @@ class VillageController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('create', Village::class);
+
         return view('villages.create');
     }
 
@@ -42,6 +47,8 @@ class VillageController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Gate::authorize('create', Village::class);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'code' => ['required', 'string', 'max:50', 'unique:villages,code'],
@@ -63,6 +70,8 @@ class VillageController extends Controller
      */
     public function show(Village $village): View
     {
+        Gate::authorize('view', $village);
+
         return view('villages.show', compact('village'));
     }
 
@@ -71,6 +80,8 @@ class VillageController extends Controller
      */
     public function edit(Village $village): View
     {
+        Gate::authorize('update', $village);
+
         return view('villages.edit', compact('village'));
     }
 
@@ -79,6 +90,8 @@ class VillageController extends Controller
      */
     public function update(Request $request, Village $village): RedirectResponse
     {
+        Gate::authorize('update', $village);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'code' => [
@@ -104,6 +117,8 @@ class VillageController extends Controller
      */
     public function destroy(Village $village): RedirectResponse
     {
+        Gate::authorize('delete', $village);
+
         $village->delete();
 
         return redirect()->route('villages.index')
