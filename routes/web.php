@@ -21,14 +21,19 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('villages', VillageController::class);
-    Route::resource('farmers', FarmerController::class);
-    Route::resource('milk-collections', MilkCollectionController::class);
+    // Village, Farmer & Collection modules (Super Admin, Manager, and Collection Staff)
+    Route::middleware('role:super_admin,manager,collection_staff')->group(function () {
+        Route::resource('villages', VillageController::class);
+        Route::resource('farmers', FarmerController::class);
+        Route::resource('milk-collections', MilkCollectionController::class);
+    });
     
-    // Main Milk Center / Milk Receiving routes
-    Route::get('/api/village-collection-summary', [MilkReceivingController::class, 'getCollectionSummary'])
-        ->name('api.village-collection-summary');
-    Route::resource('milk-receivings', MilkReceivingController::class);
+    // Main Milk Center / Milk Receiving routes (Super Admin, Manager, and Center Staff)
+    Route::middleware('role:super_admin,manager,center_staff')->group(function () {
+        Route::get('/api/village-collection-summary', [MilkReceivingController::class, 'getCollectionSummary'])
+            ->name('api.village-collection-summary');
+        Route::resource('milk-receivings', MilkReceivingController::class);
+    });
 });
 
 require __DIR__.'/auth.php';

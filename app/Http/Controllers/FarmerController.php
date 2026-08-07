@@ -6,6 +6,7 @@ use App\Models\Farmer;
 use App\Models\Village;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -16,6 +17,8 @@ class FarmerController extends Controller
      */
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', Farmer::class);
+
         $search = $request->input('search');
         $villageId = $request->input('village_id');
         $status = $request->input('status');
@@ -49,6 +52,8 @@ class FarmerController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('create', Farmer::class);
+
         // Only active villages can register new farmers
         $villages = Village::where('status', true)->orderBy('name')->get();
 
@@ -60,6 +65,8 @@ class FarmerController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Gate::authorize('create', Farmer::class);
+
         $validated = $request->validate([
             'village_id' => ['required', 'exists:villages,id'],
             'farmer_code' => ['required', 'string', 'max:50', 'unique:farmers,farmer_code'],
@@ -89,6 +96,8 @@ class FarmerController extends Controller
      */
     public function show(Farmer $farmer): View
     {
+        Gate::authorize('view', $farmer);
+
         $farmer->load('village');
 
         return view('farmers.show', compact('farmer'));
@@ -99,6 +108,8 @@ class FarmerController extends Controller
      */
     public function edit(Farmer $farmer): View
     {
+        Gate::authorize('update', $farmer);
+
         // Allow selection of active villages OR the farmer's current village (even if currently inactive)
         $villages = Village::where('status', true)
             ->orWhere('id', $farmer->village_id)
@@ -113,6 +124,8 @@ class FarmerController extends Controller
      */
     public function update(Request $request, Farmer $farmer): RedirectResponse
     {
+        Gate::authorize('update', $farmer);
+
         $validated = $request->validate([
             'village_id' => ['required', 'exists:villages,id'],
             'farmer_code' => [
@@ -147,6 +160,8 @@ class FarmerController extends Controller
      */
     public function destroy(Farmer $farmer): RedirectResponse
     {
+        Gate::authorize('delete', $farmer);
+
         $farmer->delete();
 
         return redirect()->route('farmers.index')

@@ -8,6 +8,7 @@ use App\Models\Village;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -18,6 +19,8 @@ class MilkReceivingController extends Controller
      */
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', MilkReceiving::class);
+
         $query = MilkReceiving::with(['village', 'verifier'])->latest('receiving_date');
 
         // Apply filters
@@ -48,6 +51,8 @@ class MilkReceivingController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('create', MilkReceiving::class);
+
         $villages = Village::where('status', true)->orderBy('name')->get();
         return view('milk_receivings.create', compact('villages'));
     }
@@ -57,6 +62,8 @@ class MilkReceivingController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Gate::authorize('create', MilkReceiving::class);
+
         $request->validate([
             'village_id' => [
                 'required',
@@ -111,6 +118,8 @@ class MilkReceivingController extends Controller
      */
     public function show(MilkReceiving $milkReceiving): View
     {
+        Gate::authorize('view', $milkReceiving);
+
         $milkReceiving->load(['village', 'verifier']);
 
         // Fetch the individual farmer collections for traceability
@@ -131,6 +140,8 @@ class MilkReceivingController extends Controller
      */
     public function edit(MilkReceiving $milkReceiving): View
     {
+        Gate::authorize('update', $milkReceiving);
+
         $villages = Village::where('status', true)->orderBy('name')->get();
         return view('milk_receivings.edit', compact('milkReceiving', 'villages'));
     }
@@ -140,6 +151,8 @@ class MilkReceivingController extends Controller
      */
     public function update(Request $request, MilkReceiving $milkReceiving): RedirectResponse
     {
+        Gate::authorize('update', $milkReceiving);
+
         $request->validate([
             'village_id' => [
                 'required',
@@ -194,6 +207,8 @@ class MilkReceivingController extends Controller
      */
     public function destroy(MilkReceiving $milkReceiving): RedirectResponse
     {
+        Gate::authorize('delete', $milkReceiving);
+
         $milkReceiving->delete();
         return redirect()->route('milk-receivings.index')
             ->with('success', __('Milk receiving record deleted successfully.'));
@@ -204,6 +219,7 @@ class MilkReceivingController extends Controller
      */
     public function getCollectionSummary(Request $request): JsonResponse
     {
+        Gate::authorize('viewAny', MilkReceiving::class);
         $request->validate([
             'village_id' => 'required|exists:villages,id',
             'date' => 'required|date',
