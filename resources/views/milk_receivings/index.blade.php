@@ -2,12 +2,14 @@
     <x-slot name="header">
         <x-admin.page-header title="{{ __('Milk Receivings') }}" description="{{ __('Manage and verify milk batches received at the Main Milk Center from villages.') }}">
             <x-slot name="actions">
-                <a href="{{ route('milk-receivings.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-indigo-250 transition duration-150 ease-in-out">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    {{ __('Record Intake') }}
-                </a>
+                @can('create', App\Models\MilkReceiving::class)
+                    <a href="{{ route('milk-receivings.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-indigo-250 transition duration-150 ease-in-out">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        {{ __('Record Intake') }}
+                    </a>
+                @endcan
             </x-slot>
         </x-admin.page-header>
     </x-slot>
@@ -139,14 +141,18 @@
                                     </td>
                                     <td class="pr-6 py-4 whitespace-nowrap text-right text-xs font-semibold space-x-2.5">
                                         <a href="{{ route('milk-receivings.show', $rec) }}" class="text-indigo-600 hover:text-indigo-900 transition duration-150">{{ __('View') }}</a>
-                                        <a href="{{ route('milk-receivings.edit', $rec) }}" class="text-yellow-600 hover:text-yellow-900 transition duration-150">{{ __('Edit') }}</a>
-                                        <button 
-                                            type="button" 
-                                            @click="deleteModalOpen = true; deleteActionUrl = '{{ route('milk-receivings.destroy', $rec) }}'; recordTitle = '{{ addslashes($rec->village->name) }} ({{ $rec->receiving_date->format('M d') }} - {{ ucfirst($rec->shift) }})'" 
-                                            class="text-rose-600 hover:text-rose-900 transition duration-150 focus:outline-none"
-                                        >
-                                            {{ __('Delete') }}
-                                        </button>
+                                        @can('update', $rec)
+                                            <a href="{{ route('milk-receivings.edit', $rec) }}" class="text-yellow-600 hover:text-yellow-900 transition duration-150">{{ __('Edit') }}</a>
+                                        @endcan
+                                        @can('delete', $rec)
+                                            <button 
+                                                type="button" 
+                                                @click="deleteModalOpen = true; deleteActionUrl = '{{ route('milk-receivings.destroy', $rec) }}'; recordTitle = '{{ addslashes($rec->village->name) }} ({{ $rec->receiving_date->format('M d') }} - {{ ucfirst($rec->shift) }})'" 
+                                                class="text-red-600 hover:text-red-900 transition duration-150 focus:outline-none"
+                                            >
+                                                {{ __('Delete') }}
+                                            </button>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach
@@ -189,8 +195,8 @@
                      class="inline-block align-bottom bg-white rounded-2xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 border border-slate-200/80">
                     
                     <div class="sm:flex sm:items-start">
-                        <div class="mx-auto shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 sm:mx-0 sm:h-10 sm:w-10">
-                            <svg class="h-6 w-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="mx-auto shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-red-50 border border-red-100 text-red-600 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
@@ -210,7 +216,7 @@
                         <form :action="deleteActionUrl" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-rose-600 text-xs font-semibold text-white hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 sm:w-auto transition-colors">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-red-600 text-xs font-semibold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto transition-colors">
                                 {{ __('Delete Record') }}
                             </button>
                         </form>

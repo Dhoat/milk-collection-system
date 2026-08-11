@@ -15,7 +15,7 @@ test('guests are redirected to login when accessing villages', function () {
 });
 
 test('authenticated user can view villages list', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
 
     $response = $this
         ->actingAs($user)
@@ -26,7 +26,7 @@ test('authenticated user can view villages list', function () {
 });
 
 test('authenticated user can view add village form', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
 
     $response = $this
         ->actingAs($user)
@@ -37,7 +37,7 @@ test('authenticated user can view add village form', function () {
 });
 
 test('authenticated user can store village', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
 
     $response = $this
         ->actingAs($user)
@@ -61,7 +61,7 @@ test('authenticated user can store village', function () {
 });
 
 test('village validation rules are enforced', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
 
     // Required fields missing
     $response = $this
@@ -90,7 +90,7 @@ test('village validation rules are enforced', function () {
 });
 
 test('authenticated user can view village details', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
     $village = Village::create([
         'name' => 'Village Show',
         'code' => 'VIL-SHOW',
@@ -105,7 +105,7 @@ test('authenticated user can view village details', function () {
 });
 
 test('authenticated user can edit village', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
     $village = Village::create([
         'name' => 'Old Name',
         'code' => 'VIL-OLD',
@@ -132,7 +132,7 @@ test('authenticated user can edit village', function () {
 });
 
 test('authenticated user can delete village', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
     $village = Village::create([
         'name' => 'Delete Me',
         'code' => 'VIL-DEL',
