@@ -4,9 +4,11 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Milk Collections') }}
             </h2>
-            <a href="{{ route('milk-collections.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                {{ __('Record Collection') }}
-            </a>
+            @can('create', App\Models\MilkCollection::class)
+                <a href="{{ route('milk-collections.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    {{ __('Record Collection') }}
+                </a>
+            @endcan
         </div>
     </x-slot>
 
@@ -119,12 +121,14 @@
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                             {{ __('SNF %') }}
                                         </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                            {{ __('Rate (₹)') }}
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                            {{ __('Amount (₹)') }}
-                                        </th>
+                                        @can('view-financials')
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                                {{ __('Rate (₹)') }}
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                                {{ __('Amount (₹)') }}
+                                            </th>
+                                        @endcan
                                         <th scope="col" class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                             {{ __('Actions') }}
                                         </th>
@@ -162,22 +166,28 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                                 {{ $collection->snf ? number_format($collection->snf, 2) : '-' }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                                {{ number_format($collection->rate, 2) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-bold">
-                                                {{ number_format($collection->amount, 2) }}
-                                            </td>
+                                            @can('view-financials')
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                                                    {{ number_format($collection->rate, 2) }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-bold">
+                                                    {{ number_format($collection->amount, 2) }}
+                                                </td>
+                                            @endcan
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                                 <a href="{{ route('milk-collections.show', $collection) }}" class="text-indigo-600 hover:text-indigo-900 transition duration-150">{{ __('View') }}</a>
-                                                <a href="{{ route('milk-collections.edit', $collection) }}" class="text-yellow-600 hover:text-yellow-900 transition duration-150">{{ __('Edit') }}</a>
-                                                <button 
-                                                    type="button" 
-                                                    @click="deleteModalOpen = true; deleteActionUrl = '{{ route('milk-collections.destroy', $collection) }}'; recordDetail = '{{ $collection->farmer->name }} on {{ $collection->collection_date->format('d-m-Y') }} ({{ ucfirst($collection->shift) }})'" 
-                                                    class="text-red-600 hover:text-red-900 transition duration-150 focus:outline-none"
-                                                >
-                                                    {{ __('Delete') }}
-                                                </button>
+                                                @can('update', $collection)
+                                                    <a href="{{ route('milk-collections.edit', $collection) }}" class="text-yellow-600 hover:text-yellow-900 transition duration-150">{{ __('Edit') }}</a>
+                                                @endcan
+                                                @can('delete', $collection)
+                                                    <button 
+                                                        type="button" 
+                                                        @click="deleteModalOpen = true; deleteActionUrl = '{{ route('milk-collections.destroy', $collection) }}'; recordDetail = '{{ $collection->farmer->name }} on {{ $collection->collection_date->format('d-m-Y') }} ({{ ucfirst($collection->shift) }})'" 
+                                                        class="text-red-600 hover:text-red-900 transition duration-150 focus:outline-none"
+                                                    >
+                                                        {{ __('Delete') }}
+                                                    </button>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

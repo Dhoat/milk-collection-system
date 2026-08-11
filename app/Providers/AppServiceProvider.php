@@ -54,8 +54,48 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasAnyRole(['super_admin', 'manager', 'center_staff']);
         });
 
+        Gate::define('manage-stock', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager', 'center_staff']);
+        });
+
+        Gate::define('manage-shops', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager']);
+        });
+
+        Gate::define('view-shops', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager', 'center_staff']);
+        });
+
+        Gate::define('manage-orders', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager', 'center_staff']);
+        });
+
+        Gate::define('view-orders', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager', 'center_staff']);
+        });
+
+        Gate::define('manage-deliveries', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager', 'center_staff']);
+        });
+
+        Gate::define('view-deliveries', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager', 'center_staff']);
+        });
+
         Gate::define('view-financials', function (User $user) {
             return $user->hasAnyRole(['super_admin', 'manager']);
+        });
+
+        Gate::define('view-reports', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager']);
+        });
+
+        Gate::define('manage-users', function (User $user) {
+            return $user->isSuperAdmin();
+        });
+
+        Gate::define('manage-settings', function (User $user) {
+            return $user->isSuperAdmin();
         });
     }
 }

@@ -46,11 +46,33 @@ class MilkReceiving extends Model
     ];
 
     /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::saved(function (MilkReceiving $receiving) {
+            app(\App\Services\MilkStockService::class)->syncFromReceiving($receiving);
+        });
+
+        static::deleted(function (MilkReceiving $receiving) {
+            app(\App\Services\MilkStockService::class)->removeFromReceiving($receiving);
+        });
+    }
+
+    /**
      * Get the village that sent the milk batch.
      */
     public function village(): BelongsTo
     {
         return $this->belongsTo(Village::class);
+    }
+
+    /**
+     * Get the associated milk stock ledger entry.
+     */
+    public function milkStock(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(MilkStock::class, 'milk_receiving_id');
     }
 
     /**

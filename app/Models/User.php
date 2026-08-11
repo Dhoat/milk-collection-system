@@ -9,14 +9,18 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
-#[Fillable(['name', 'email', 'password', 'role'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'status',
+    ];
 
     /**
      * Helper methods for checking user roles.
@@ -51,6 +55,30 @@ class User extends Authenticatable
         return in_array($this->role, $roles);
     }
 
+    public function isActive(): bool
+    {
+        return (bool) $this->status;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        return $query->when($filters['search'] ?? null, function ($q, $search) {
+            $q->where(function ($sq) use ($search) {
+                $sq->where('name', 'like', "%{$search}%")
+                   ->orWhere('email', 'like', "%{$search}%");
+            });
+        })->when(isset($filters['role']) && $filters['role'] !== '', function ($q) use ($filters) {
+            $q->where('role', $filters['role']);
+        })->when(isset($filters['status']) && $filters['status'] !== '', function ($q) use ($filters) {
+            $q->where('status', $filters['status'] == '1');
+        });
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -61,6 +89,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'status' => 'boolean',
         ];
     }
 

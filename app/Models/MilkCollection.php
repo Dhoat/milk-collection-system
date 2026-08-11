@@ -7,21 +7,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'farmer_id',
-    'collection_date',
-    'shift',
-    'milk_quantity',
-    'fat',
-    'snf',
-    'rate',
-    'amount',
-    'notes'
-])]
 class MilkCollection extends Model
 {
     /** @use HasFactory<\Database\Factories\MilkCollectionFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'farmer_id',
+        'collection_date',
+        'shift',
+        'milk_quantity',
+        'fat',
+        'snf',
+        'rate',
+        'amount',
+        'notes',
+    ];
 
     /**
      * Get the attributes that should be cast.

@@ -16,7 +16,7 @@ test('guests are redirected to login when accessing farmers', function () {
 });
 
 test('authenticated user can view farmers list', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
 
     $response = $this
         ->actingAs($user)
@@ -27,7 +27,7 @@ test('authenticated user can view farmers list', function () {
 });
 
 test('authenticated user can view register farmer form', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
 
     $response = $this
         ->actingAs($user)
@@ -38,7 +38,7 @@ test('authenticated user can view register farmer form', function () {
 });
 
 test('authenticated user can register a farmer', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
     $village = Village::create([
         'name' => 'Active Village',
         'code' => 'VIL-ACT',
@@ -77,7 +77,7 @@ test('authenticated user can register a farmer', function () {
 });
 
 test('farmer validation rules are enforced', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
     $village = Village::create([
         'name' => 'Test Village',
         'code' => 'VIL-TEST',
@@ -128,7 +128,7 @@ test('farmer validation rules are enforced', function () {
 });
 
 test('authenticated user can view farmer profile', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
     $village = Village::create([
         'name' => 'Village Show',
         'code' => 'VIL-SHOW',
@@ -149,7 +149,7 @@ test('authenticated user can view farmer profile', function () {
 });
 
 test('authenticated user can edit farmer profile', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
     $village = Village::create([
         'name' => 'Village Edit',
         'code' => 'VIL-EDIT',
@@ -183,7 +183,7 @@ test('authenticated user can edit farmer profile', function () {
 });
 
 test('authenticated user can delete farmer', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'super_admin']);
     $village = Village::create([
         'name' => 'Village Del',
         'code' => 'VIL-DEL',

@@ -5,9 +5,11 @@
                 {{ __('Milk Collection Details') }}
             </h2>
             <div class="flex gap-2">
-                <a href="{{ route('milk-collections.edit', $milkCollection) }}" class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                    {{ __('Edit Record') }}
-                </a>
+                @can('update', $milkCollection)
+                    <a href="{{ route('milk-collections.edit', $milkCollection) }}" class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        {{ __('Edit Record') }}
+                    </a>
+                @endcan
                 <a href="{{ route('milk-collections.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     {{ __('Back to List') }}
                 </a>
@@ -73,18 +75,20 @@
                                     {{ number_format($milkCollection->milk_quantity, 2) }} Liters
                                 </span>
                             </div>
-                            <div>
-                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">{{ __('Rate per Liter') }}</span>
-                                <span class="text-lg font-bold text-gray-800 block mt-0.5">
-                                    ₹ {{ number_format($milkCollection->rate, 2) }}
-                                </span>
-                            </div>
-                            <div>
-                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">{{ __('Total Amount') }}</span>
-                                <span class="text-xl font-extrabold text-indigo-600 block mt-0.5">
-                                    ₹ {{ number_format($milkCollection->amount, 2) }}
-                                </span>
-                            </div>
+                            @can('view-financials')
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">{{ __('Rate per Liter') }}</span>
+                                    <span class="text-lg font-bold text-gray-800 block mt-0.5">
+                                        ₹ {{ number_format($milkCollection->rate, 2) }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">{{ __('Total Amount') }}</span>
+                                    <span class="text-xl font-extrabold text-indigo-600 block mt-0.5">
+                                        ₹ {{ number_format($milkCollection->amount, 2) }}
+                                    </span>
+                                </div>
+                            @endcan
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -110,9 +114,11 @@
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-gray-100 flex gap-4">
-                        <a href="{{ route('milk-collections.edit', $milkCollection) }}" class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            {{ __('Edit Details') }}
-                        </a>
+                        @can('update', $milkCollection)
+                            <a href="{{ route('milk-collections.edit', $milkCollection) }}" class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                {{ __('Edit Details') }}
+                            </a>
+                        @endcan
                         <a href="{{ route('milk-collections.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
                             {{ __('Back to List') }}
                         </a>

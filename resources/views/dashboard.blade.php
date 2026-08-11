@@ -42,15 +42,17 @@
         </x-admin.stat-card>
 
         <!-- Today's Amount -->
-        <x-admin.stat-card 
-            title="{{ __('Today\'s Value') }}" 
-            value="₹ {{ number_format($kpis['today_amount'], 2) }}"
-            description="{{ __('Total estimated payout value') }}"
-            color="rose">
-            <x-slot name="icon">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M10 20H4a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"></path>
-            </x-slot>
-        </x-admin.stat-card>
+        @can('view-financials')
+            <x-admin.stat-card 
+                title="{{ __('Today\'s Value') }}" 
+                value="₹ {{ number_format($kpis['today_amount'], 2) }}"
+                description="{{ __('Total estimated payout value') }}"
+                color="rose">
+                <x-slot name="icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M10 20H4a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"></path>
+                </x-slot>
+            </x-admin.stat-card>
+        @endcan
     </div>
 
     <!-- Chart & Shift Split Section -->
@@ -170,7 +172,9 @@
                                     <th scope="col" class="pl-6 py-2.5 text-left text-xxs font-bold text-slate-400 uppercase tracking-wider">{{ __('Village') }}</th>
                                     <th scope="col" class="px-4 py-2.5 text-left text-xxs font-bold text-slate-400 uppercase tracking-wider">{{ __('Farmers') }}</th>
                                     <th scope="col" class="px-4 py-2.5 text-left text-xxs font-bold text-slate-400 uppercase tracking-wider">{{ __('Qty (Liters)') }}</th>
-                                    <th scope="col" class="pr-6 py-2.5 text-right text-xxs font-bold text-slate-400 uppercase tracking-wider">{{ __('Today Value') }}</th>
+                                    @can('view-financials')
+                                        <th scope="col" class="pr-6 py-2.5 text-right text-xxs font-bold text-slate-400 uppercase tracking-wider">{{ __('Today Value') }}</th>
+                                    @endcan
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 bg-white">
@@ -189,9 +193,11 @@
                                         <td class="px-4 py-3.5 whitespace-nowrap text-xs font-semibold text-slate-700">
                                             {{ number_format($perf->today_quantity, 2) }} L
                                         </td>
-                                        <td class="pr-6 py-3.5 whitespace-nowrap text-right text-xs font-bold text-indigo-650">
-                                            ₹ {{ number_format($perf->today_amount, 2) }}
-                                        </td>
+                                        @can('view-financials')
+                                            <td class="pr-6 py-3.5 whitespace-nowrap text-right text-xs font-bold text-indigo-650">
+                                                ₹ {{ number_format($perf->today_amount, 2) }}
+                                            </td>
+                                        @endcan
                                     </tr>
                                 @endforeach
                             </tbody>
