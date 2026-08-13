@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\FarmerController;
 use App\Http\Controllers\Api\MilkCollectionController;
 use App\Http\Controllers\Api\MilkReceivingController;
 use App\Http\Controllers\Api\MilkStockController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ShopController;
@@ -58,6 +59,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
         // Shop Management Module
         Route::patch('shops/{shop}/toggle-status', [ShopController::class, 'toggleStatus'])->name('shops.toggle-status');
         Route::apiResource('shops', ShopController::class);
+
+        // Products Listing Endpoint
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
 
         // Shop Orders Module
         Route::patch('shop-orders/{shopOrder}/status', [ShopOrderController::class, 'updateStatus'])->name('shop-orders.update-status');
