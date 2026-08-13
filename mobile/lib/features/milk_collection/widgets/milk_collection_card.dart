@@ -31,7 +31,7 @@ class MilkCollectionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(14.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -49,56 +49,41 @@ class MilkCollectionCard extends StatelessWidget {
                       color: isMorning
                           ? const Color(0xFFEA580C)
                           : const Color(0xFF0284C7),
-                      size: 22,
+                      size: 20,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           farmerName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            if (farmerCode.isNotEmpty) ...[
-                              Text(
-                                farmerCode,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                              if (villageName.isNotEmpty)
-                                const Text(
-                                  '  ·  ',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppTheme.textSecondary,
-                                  ),
-                                ),
-                            ],
-                            if (villageName.isNotEmpty)
-                              Text(
-                                villageName,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppTheme.textSecondary,
-                                ),
-                              ),
-                          ],
+                        Text(
+                          farmerCode.isNotEmpty && villageName.isNotEmpty
+                              ? '$farmerCode  ·  $villageName'
+                              : (farmerCode.isNotEmpty ? farmerCode : villageName),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppTheme.textSecondary,
+                          ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(width: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
@@ -124,6 +109,8 @@ class MilkCollectionCard extends StatelessWidget {
                     ),
                   ),
                   PopupMenuButton<String>(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                     onSelected: (value) {
                       if (value == 'edit') onEdit();
                       if (value == 'delete') onDelete();
@@ -157,27 +144,39 @@ class MilkCollectionCard extends StatelessWidget {
 
               // Metrics Grid: Date | Quantity | Fat/SNF | Amount
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 decoration: BoxDecoration(
                   color: AppTheme.backgroundColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildMetric('Date', collection.collectionDate),
-                    _buildMetric(
-                      'Quantity',
-                      '${collection.milkQuantity.toStringAsFixed(1)} L',
+                    Expanded(
+                      flex: 2,
+                      child: _buildMetric('Date', collection.collectionDate),
                     ),
-                    _buildMetric(
-                      'Fat / SNF',
-                      '${collection.fat?.toStringAsFixed(1) ?? '-'}/${collection.snf?.toStringAsFixed(1) ?? '-'}',
+                    Expanded(
+                      flex: 2,
+                      child: _buildMetric(
+                        'Quantity',
+                        '${collection.milkQuantity.toStringAsFixed(1)} L',
+                      ),
                     ),
-                    _buildMetric(
-                      'Total Amount',
-                      '₹ ${collection.amount.toStringAsFixed(2)}',
-                      isBold: true,
+                    Expanded(
+                      flex: 2,
+                      child: _buildMetric(
+                        'Fat / SNF',
+                        '${collection.fat?.toStringAsFixed(1) ?? '-'}/${collection.snf?.toStringAsFixed(1) ?? '-'}',
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: _buildMetric(
+                        'Total Amount',
+                        '₹ ${collection.amount.toStringAsFixed(2)}',
+                        isBold: true,
+                        alignRight: true,
+                      ),
                     ),
                   ],
                 ),
@@ -189,25 +188,32 @@ class MilkCollectionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric(String label, String value, {bool isBold = false}) {
+  Widget _buildMetric(String label, String value, {bool isBold = false, bool alignRight = false}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-            fontSize: 11,
+            fontSize: 10,
             color: AppTheme.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: isBold ? AppTheme.primaryColor : AppTheme.textPrimary,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: alignRight ? Alignment.centerRight : Alignment.centerLeft,
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+              color: isBold ? AppTheme.primaryColor : AppTheme.textPrimary,
+            ),
           ),
         ),
       ],

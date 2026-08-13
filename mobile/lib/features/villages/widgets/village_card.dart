@@ -42,6 +42,8 @@ class VillageCard extends StatelessWidget {
             Expanded(
               child: Text(
                 village.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -49,6 +51,7 @@ class VillageCard extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(width: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
@@ -77,6 +80,8 @@ class VillageCard extends StatelessWidget {
             children: [
               Text(
                 'Code: ${village.code}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -89,12 +94,16 @@ class VillageCard extends StatelessWidget {
                   children: [
                     const Icon(Icons.people_outline, size: 14, color: AppTheme.textSecondary),
                     const SizedBox(width: 4),
-                    Text(
-                      '${village.farmersCount} Registered Farmers',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.primaryColor,
-                        fontWeight: FontWeight.w600,
+                    Expanded(
+                      child: Text(
+                        '${village.farmersCount} Registered Farmers',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

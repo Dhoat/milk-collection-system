@@ -200,12 +200,11 @@ class DailyReportScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStockMetric('Opening', '${report.stock.opening.toStringAsFixed(1)} L'),
-                      _buildStockMetric('Stock In', '+${report.stock.stockIn.toStringAsFixed(1)} L', color: const Color(0xFF059669)),
-                      _buildStockMetric('Stock Out', '-${report.stock.stockOut.toStringAsFixed(1)} L', color: const Color(0xFFDC2626)),
-                      _buildStockMetric('Closing', '${report.stock.closing.toStringAsFixed(1)} L', color: AppTheme.primaryColor),
+                      Expanded(child: _buildStockMetric('Opening', '${report.stock.opening.toStringAsFixed(1)} L')),
+                      Expanded(child: _buildStockMetric('Stock In', '+${report.stock.stockIn.toStringAsFixed(1)} L', color: const Color(0xFF059669))),
+                      Expanded(child: _buildStockMetric('Stock Out', '-${report.stock.stockOut.toStringAsFixed(1)} L', color: const Color(0xFFDC2626))),
+                      Expanded(child: _buildStockMetric('Closing', '${report.stock.closing.toStringAsFixed(1)} L', color: AppTheme.primaryColor)),
                     ],
                   ),
                 ),
@@ -222,15 +221,24 @@ class DailyReportScreen extends StatelessWidget {
               children: [
                 Text(
                   'Total Order Value: ₹${report.orders.totalValue.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
                 ),
                 const SizedBox(height: 12),
                 Wrap(
-                  spacing: 10,
-                  runSpacing: 8,
+                  spacing: 8,
+                  runSpacing: 6,
                   children: report.orders.byStatus.entries.map((e) {
+                    final statusLabel = e.key.replaceAll('_', ' ').toUpperCase();
                     return Chip(
-                      label: Text('${e.key.toUpperCase()}: ${e.value}'),
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                      label: Text(
+                        '$statusLabel: ${e.value}',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                      ),
                       backgroundColor: AppTheme.backgroundColor,
                     );
                   }).toList(),
@@ -244,11 +252,18 @@ class DailyReportScreen extends StatelessWidget {
             title: 'Delivery Dispatches (${report.deliveries.totalCount} Dispatches)',
             icon: Icons.local_shipping_outlined,
             child: Wrap(
-              spacing: 10,
-              runSpacing: 8,
+              spacing: 8,
+              runSpacing: 6,
               children: report.deliveries.byStatus.entries.map((e) {
+                final statusLabel = e.key.replaceAll('_', ' ').toUpperCase();
                 return Chip(
-                  label: Text('${e.key.toUpperCase()}: ${e.value}'),
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                  label: Text(
+                    '$statusLabel: ${e.value}',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                  ),
                   backgroundColor: AppTheme.backgroundColor,
                 );
               }).toList(),
@@ -273,9 +288,12 @@ class DailyReportScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           '${p.productName} (${p.unit})',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
                         '${p.totalQty.toStringAsFixed(0)} ${p.unit} (₹${p.totalSales.toStringAsFixed(2)})',
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
@@ -292,14 +310,20 @@ class DailyReportScreen extends StatelessWidget {
 
   Widget _buildStockMetric(String label, String value, {Color color = AppTheme.textPrimary}) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          value,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color),
+          ),
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary),
         ),
       ],
     );

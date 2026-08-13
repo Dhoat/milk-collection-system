@@ -55,6 +55,8 @@ class ShopCard extends StatelessWidget {
                       children: [
                         Text(
                           shop.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -64,6 +66,8 @@ class ShopCard extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           'Code: ${shop.shopCode}  ·  Owner: ${shop.ownerName}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 12,
                             color: AppTheme.textSecondary,

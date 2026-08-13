@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/network/api_client.dart';
 import 'package:mobile/features/dashboard/models/dashboard_model.dart';
 import 'package:mobile/features/dashboard/providers/dashboard_provider.dart';
 import 'package:mobile/features/dashboard/repositories/dashboard_repository.dart';
+import 'package:mobile/features/dashboard/widgets/kpi_card.dart';
 
 class MockApiClient implements ApiClient {
   Map<String, dynamic>? mockResponse;
@@ -129,6 +131,38 @@ void main() {
 
       expect(provider.hasError, isTrue);
       expect(provider.errorMessage, contains('Failed to load dashboard data'));
+    });
+  });
+
+  group('KpiCard Responsive Widget Tests', () {
+    testWidgets('KpiCard renders without overflow on small screen width (320px)', (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 140,
+              height: 120,
+              child: KpiCard(
+                title: 'Collection Amount',
+                value: '₹125,400',
+                subtitle: 'Total Value',
+                icon: Icons.currency_rupee_outlined,
+                iconColor: Color(0xFFD97706),
+                backgroundColor: Color(0xFFFEF3C7),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Collection Amount'), findsOneWidget);
+      expect(find.text('₹125,400'), findsOneWidget);
+      expect(find.text('Total Value'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   });
 }

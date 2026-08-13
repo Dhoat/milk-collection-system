@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../core/permissions/role_permissions.dart';
+import '../../core/widgets/access_restricted_screen.dart';
 import '../../features/auth/models/user_model.dart';
+import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/dashboard/screens/home_screen.dart';
 import '../../features/deliveries/models/delivery_model.dart';
@@ -100,6 +104,28 @@ class AppRoutes {
   static const String userDetail = '/users/detail';
   static const String userEdit = '/users/edit';
 
+  static Route<dynamic> _protectedRoute(
+    Widget Function(BuildContext context) builder,
+    RouteSettings settings,
+  ) {
+    return MaterialPageRoute(
+      builder: (context) {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        final userRole = authProvider.user?.role;
+        final routeName = settings.name ?? '';
+
+        if (!RolePermissions.canAccessRoute(userRole, routeName)) {
+          return AccessRestrictedScreen(
+            routeName: routeName,
+            userRole: userRole,
+          );
+        }
+        return builder(context);
+      },
+      settings: settings,
+    );
+  }
+
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case login:
@@ -109,245 +135,134 @@ class AppRoutes {
         );
 
       case home:
-        return MaterialPageRoute(
-          builder: (_) => const HomeScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const HomeScreen(), settings);
 
       case profile:
-        return MaterialPageRoute(
-          builder: (_) => const ProfileScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const ProfileScreen(), settings);
 
       case villages:
-        return MaterialPageRoute(
-          builder: (_) => const VillageListScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const VillageListScreen(), settings);
 
       case villageCreate:
-        return MaterialPageRoute(
-          builder: (_) => const AddEditVillageScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const AddEditVillageScreen(), settings);
 
       case villageDetail:
         final village = settings.arguments as VillageModel;
-        return MaterialPageRoute(
-          builder: (_) => VillageDetailScreen(village: village),
-          settings: settings,
-        );
+        return _protectedRoute((_) => VillageDetailScreen(village: village), settings);
 
       case villageEdit:
         final village = settings.arguments as VillageModel;
-        return MaterialPageRoute(
-          builder: (_) => AddEditVillageScreen(village: village),
-          settings: settings,
-        );
+        return _protectedRoute((_) => AddEditVillageScreen(village: village), settings);
 
       case farmers:
-        return MaterialPageRoute(
-          builder: (_) => const FarmerListScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const FarmerListScreen(), settings);
 
       case farmerCreate:
-        return MaterialPageRoute(
-          builder: (_) => const AddEditFarmerScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const AddEditFarmerScreen(), settings);
 
       case farmerDetail:
         final farmer = settings.arguments as FarmerModel;
-        return MaterialPageRoute(
-          builder: (_) => FarmerDetailScreen(farmer: farmer),
-          settings: settings,
-        );
+        return _protectedRoute((_) => FarmerDetailScreen(farmer: farmer), settings);
 
       case farmerEdit:
         final farmer = settings.arguments as FarmerModel;
-        return MaterialPageRoute(
-          builder: (_) => AddEditFarmerScreen(farmer: farmer),
-          settings: settings,
-        );
+        return _protectedRoute((_) => AddEditFarmerScreen(farmer: farmer), settings);
 
       case milkCollections:
-        return MaterialPageRoute(
-          builder: (_) => const MilkCollectionListScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const MilkCollectionListScreen(), settings);
 
       case milkCollectionCreate:
         final preSelectedFarmer = settings.arguments as FarmerModel?;
-        return MaterialPageRoute(
-          builder: (_) => AddEditMilkCollectionScreen(preSelectedFarmer: preSelectedFarmer),
-          settings: settings,
-        );
+        return _protectedRoute((_) => AddEditMilkCollectionScreen(preSelectedFarmer: preSelectedFarmer), settings);
 
       case milkCollectionDetail:
         final collection = settings.arguments as MilkCollectionModel;
-        return MaterialPageRoute(
-          builder: (_) => MilkCollectionDetailScreen(collection: collection),
-          settings: settings,
-        );
+        return _protectedRoute((_) => MilkCollectionDetailScreen(collection: collection), settings);
 
       case milkCollectionEdit:
         final collection = settings.arguments as MilkCollectionModel;
-        return MaterialPageRoute(
-          builder: (_) => AddEditMilkCollectionScreen(collection: collection),
-          settings: settings,
-        );
+        return _protectedRoute((_) => AddEditMilkCollectionScreen(collection: collection), settings);
 
       case milkReceivings:
-        return MaterialPageRoute(
-          builder: (_) => const MilkReceivingListScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const MilkReceivingListScreen(), settings);
 
       case milkReceivingCreate:
-        return MaterialPageRoute(
-          builder: (_) => const AddEditMilkReceivingScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const AddEditMilkReceivingScreen(), settings);
 
       case milkReceivingDetail:
         final receiving = settings.arguments as MilkReceivingModel;
-        return MaterialPageRoute(
-          builder: (_) => MilkReceivingDetailScreen(receiving: receiving),
-          settings: settings,
-        );
+        return _protectedRoute((_) => MilkReceivingDetailScreen(receiving: receiving), settings);
 
       case milkReceivingEdit:
         final receiving = settings.arguments as MilkReceivingModel;
-        return MaterialPageRoute(
-          builder: (_) => AddEditMilkReceivingScreen(receiving: receiving),
-          settings: settings,
-        );
+        return _protectedRoute((_) => AddEditMilkReceivingScreen(receiving: receiving), settings);
 
       case milkStocks:
-        return MaterialPageRoute(
-          builder: (_) => const MilkStockScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const MilkStockScreen(), settings);
 
       case milkStockOut:
-        return MaterialPageRoute(
-          builder: (_) => const StockOutScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const StockOutScreen(), settings);
 
       case shops:
-        return MaterialPageRoute(
-          builder: (_) => const ShopListScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const ShopListScreen(), settings);
 
       case shopCreate:
-        return MaterialPageRoute(
-          builder: (_) => const AddEditShopScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const AddEditShopScreen(), settings);
 
       case shopDetail:
         final shop = settings.arguments as ShopModel;
-        return MaterialPageRoute(
-          builder: (_) => ShopDetailScreen(shop: shop),
-          settings: settings,
-        );
+        return _protectedRoute((_) => ShopDetailScreen(shop: shop), settings);
 
       case shopEdit:
         final shop = settings.arguments as ShopModel;
-        return MaterialPageRoute(
-          builder: (_) => AddEditShopScreen(shop: shop),
-          settings: settings,
-        );
+        return _protectedRoute((_) => AddEditShopScreen(shop: shop), settings);
 
       case shopOrders:
-        return MaterialPageRoute(
-          builder: (_) => const ShopOrderListScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const ShopOrderListScreen(), settings);
 
       case shopOrderCreate:
         final initialShop = settings.arguments as ShopModel?;
-        return MaterialPageRoute(
-          builder: (_) => CreateShopOrderScreen(initialShop: initialShop),
-          settings: settings,
-        );
+        return _protectedRoute((_) => CreateShopOrderScreen(initialShop: initialShop), settings);
 
       case shopOrderDetail:
         final order = settings.arguments as ShopOrderModel;
-        return MaterialPageRoute(
-          builder: (_) => ShopOrderDetailScreen(order: order),
-          settings: settings,
-        );
+        return _protectedRoute((_) => ShopOrderDetailScreen(order: order), settings);
 
       case shopOrderEdit:
         final order = settings.arguments as ShopOrderModel;
-        return MaterialPageRoute(
-          builder: (_) => ShopOrderDetailScreen(order: order),
-          settings: settings,
-        );
+        return _protectedRoute((_) => ShopOrderDetailScreen(order: order), settings);
 
       case deliveries:
-        return MaterialPageRoute(
-          builder: (_) => const DeliveryListScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const DeliveryListScreen(), settings);
 
       case createDelivery:
         final initialShopOrder = settings.arguments as ShopOrderModel?;
-        return MaterialPageRoute(
-          builder: (_) => CreateDeliveryScreen(initialShopOrder: initialShopOrder),
-          settings: settings,
-        );
+        return _protectedRoute((_) => CreateDeliveryScreen(initialShopOrder: initialShopOrder), settings);
 
       case deliveryDetail:
         final delivery = settings.arguments as DeliveryModel;
-        return MaterialPageRoute(
-          builder: (_) => DeliveryDetailScreen(delivery: delivery),
-          settings: settings,
-        );
+        return _protectedRoute((_) => DeliveryDetailScreen(delivery: delivery), settings);
 
       case updateDeliveryStatus:
         final delivery = settings.arguments as DeliveryModel;
-        return MaterialPageRoute(
-          builder: (_) => UpdateDeliveryStatusScreen(delivery: delivery),
-          settings: settings,
-        );
+        return _protectedRoute((_) => UpdateDeliveryStatusScreen(delivery: delivery), settings);
 
       case reports:
-        return MaterialPageRoute(
-          builder: (_) => const ReportsScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const ReportsScreen(), settings);
 
       case users:
-        return MaterialPageRoute(
-          builder: (_) => const UserListScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const UserListScreen(), settings);
 
       case userCreate:
-        return MaterialPageRoute(
-          builder: (_) => const AddEditUserScreen(),
-          settings: settings,
-        );
+        return _protectedRoute((_) => const AddEditUserScreen(), settings);
 
       case userDetail:
         final user = settings.arguments as UserModel;
-        return MaterialPageRoute(
-          builder: (_) => UserDetailScreen(user: user),
-          settings: settings,
-        );
+        return _protectedRoute((_) => UserDetailScreen(user: user), settings);
 
       case userEdit:
         final user = settings.arguments as UserModel;
-        return MaterialPageRoute(
-          builder: (_) => AddEditUserScreen(user: user),
-          settings: settings,
-        );
+        return _protectedRoute((_) => AddEditUserScreen(user: user), settings);
 
       default:
         return MaterialPageRoute(

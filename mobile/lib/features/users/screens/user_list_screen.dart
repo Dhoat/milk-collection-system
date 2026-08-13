@@ -91,33 +91,35 @@ class _UserListScreenState extends State<UserListScreen> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String?>(
+                        isExpanded: true,
                         initialValue: provider.selectedRoleFilter,
                         decoration: const InputDecoration(
                           labelText: 'Role',
                           contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         ),
                         items: const [
-                          DropdownMenuItem(value: null, child: Text('All Roles')),
-                          DropdownMenuItem(value: 'super_admin', child: Text('Super Admin')),
-                          DropdownMenuItem(value: 'manager', child: Text('Manager')),
-                          DropdownMenuItem(value: 'collection_staff', child: Text('Collection Staff')),
-                          DropdownMenuItem(value: 'center_staff', child: Text('Center Staff')),
+                          DropdownMenuItem(value: null, child: Text('All Roles', overflow: TextOverflow.ellipsis)),
+                          DropdownMenuItem(value: 'super_admin', child: Text('Super Admin', overflow: TextOverflow.ellipsis)),
+                          DropdownMenuItem(value: 'manager', child: Text('Manager', overflow: TextOverflow.ellipsis)),
+                          DropdownMenuItem(value: 'collection_staff', child: Text('Collection Staff', overflow: TextOverflow.ellipsis)),
+                          DropdownMenuItem(value: 'center_staff', child: Text('Center Staff', overflow: TextOverflow.ellipsis)),
                         ],
                         onChanged: (role) => provider.setRoleFilter(role),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: DropdownButtonFormField<String?>(
+                        isExpanded: true,
                         initialValue: provider.selectedStatusFilter,
                         decoration: const InputDecoration(
                           labelText: 'Status',
                           contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         ),
                         items: const [
-                          DropdownMenuItem(value: null, child: Text('All Status')),
-                          DropdownMenuItem(value: '1', child: Text('Active')),
-                          DropdownMenuItem(value: '0', child: Text('Inactive')),
+                          DropdownMenuItem(value: null, child: Text('All Status', overflow: TextOverflow.ellipsis)),
+                          DropdownMenuItem(value: '1', child: Text('Active', overflow: TextOverflow.ellipsis)),
+                          DropdownMenuItem(value: '0', child: Text('Inactive', overflow: TextOverflow.ellipsis)),
                         ],
                         onChanged: (status) => provider.setStatusFilter(status),
                       ),

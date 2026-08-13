@@ -4,25 +4,47 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class ApiConstants {
   static String? _customBaseUrl;
 
+  /// Default Physical Android LAN IP
+  static const String physicalAndroidBaseUrl = 'http://192.168.1.22:8000/api';
+
+  /// Android Emulator IP
+  static const String emulatorBaseUrl = 'http://10.0.2.2:8000/api';
+
+  /// Localhost IP (Web / Linux / Desktop)
+  static const String localhostBaseUrl = 'http://127.0.0.1:8000/api';
+
   /// Dynamically resolved base API URL.
-  /// - Android Emulator: 'http://10.0.2.2:8000/api'
-  /// - Linux / Web / iOS Simulator: 'http://127.0.0.1:8000/api'
-  /// - Can be overridden via setter: `ApiConstants.baseUrl = 'http://192.168.1.100:8000/api'`
+  /// 1. Uses `--dart-define=API_BASE_URL=...` if provided.
+  /// 2. Uses `ApiConstants.baseUrl = ...` setter if configured programmatically.
+  /// 3. If `--dart-define=USE_EMULATOR=true` is set, uses Android Emulator URL (`http://10.0.2.2:8000/api`).
+  /// 4. Default for Android: `http://192.168.1.22:8000/api` (Physical Android Device LAN IP).
+  /// 5. Default for Web / Linux / Desktop: `http://127.0.0.1:8000/api`.
   static String get baseUrl {
+    const envUrl = String.fromEnvironment('API_BASE_URL');
+    if (envUrl.isNotEmpty) {
+      return envUrl;
+    }
+
     if (_customBaseUrl != null && _customBaseUrl!.isNotEmpty) {
       return _customBaseUrl!;
     }
+
     if (kIsWeb) {
-      return 'http://127.0.0.1:8000/api';
+      return localhostBaseUrl;
     }
+
     try {
       if (Platform.isAndroid) {
-        return 'http://10.0.2.2:8000/api';
+        const useEmulator = bool.fromEnvironment('USE_EMULATOR', defaultValue: false);
+        if (useEmulator) {
+          return emulatorBaseUrl;
+        }
+        return physicalAndroidBaseUrl;
       }
     } catch (_) {
       // Fallback for unsupported platform inspect
     }
-    return 'http://127.0.0.1:8000/api';
+    return localhostBaseUrl;
   }
 
   static set baseUrl(String value) {

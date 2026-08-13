@@ -249,15 +249,24 @@ class MonthlyReportScreen extends StatelessWidget {
               children: [
                 Text(
                   'Orders: ${report.orders.totalCount} (Value: ₹${report.orders.totalValue.toStringAsFixed(2)})',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
-                  spacing: 10,
-                  runSpacing: 8,
+                  spacing: 8,
+                  runSpacing: 6,
                   children: report.orders.byStatus.entries.map((e) {
+                    final statusLabel = e.key.replaceAll('_', ' ').toUpperCase();
                     return Chip(
-                      label: Text('${e.key.toUpperCase()}: ${e.value}'),
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                      label: Text(
+                        '$statusLabel: ${e.value}',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                      ),
                       backgroundColor: AppTheme.backgroundColor,
                     );
                   }).toList(),
@@ -265,15 +274,24 @@ class MonthlyReportScreen extends StatelessWidget {
                 const Divider(height: 24),
                 Text(
                   'Deliveries: ${report.deliveries.totalCount} Dispatches',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
-                  spacing: 10,
-                  runSpacing: 8,
+                  spacing: 8,
+                  runSpacing: 6,
                   children: report.deliveries.byStatus.entries.map((e) {
+                    final statusLabel = e.key.replaceAll('_', ' ').toUpperCase();
                     return Chip(
-                      label: Text('${e.key.toUpperCase()}: ${e.value}'),
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                      label: Text(
+                        '$statusLabel: ${e.value}',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                      ),
                       backgroundColor: AppTheme.backgroundColor,
                     );
                   }).toList(),
@@ -300,9 +318,12 @@ class MonthlyReportScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           '${p.productName} (${p.unit})',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
                         '${p.totalQty.toStringAsFixed(0)} ${p.unit} (₹${p.totalSales.toStringAsFixed(2)})',
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),

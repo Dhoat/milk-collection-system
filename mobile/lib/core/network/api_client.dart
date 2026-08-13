@@ -1,8 +1,11 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 
 import '../constants/api_constants.dart';
 import '../errors/api_exception.dart';
@@ -23,14 +26,29 @@ class HttpApiClient implements ApiClient {
   HttpApiClient({
     http.Client? client,
     required this.tokenStorage,
-  }) : _client = client ?? http.Client();
+  }) : _client = client ?? _createDefaultClient();
+
+  static http.Client _createDefaultClient() {
+    if (kIsWeb) {
+      return http.Client();
+    }
+    final ioHttpClient = HttpClient();
+    ioHttpClient.findProxy = (uri) => 'DIRECT';
+    ioHttpClient.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+    ioHttpClient.connectionTimeout = ApiConstants.connectTimeout;
+    return IOClient(ioHttpClient);
+  }
 
   Uri _buildUri(String path, [Map<String, String>? queryParameters]) {
     final cleanBase = ApiConstants.baseUrl.endsWith('/')
         ? ApiConstants.baseUrl.substring(0, ApiConstants.baseUrl.length - 1)
         : ApiConstants.baseUrl;
     final cleanPath = path.startsWith('/') ? path : '/$path';
-    return Uri.parse('$cleanBase$cleanPath').replace(queryParameters: queryParameters);
+    final uri = Uri.parse('$cleanBase$cleanPath');
+    if (queryParameters != null && queryParameters.isNotEmpty) {
+      return uri.replace(queryParameters: queryParameters);
+    }
+    return uri;
   }
 
   Future<Map<String, String>> _buildHeaders() async {
@@ -50,8 +68,7 @@ class HttpApiClient implements ApiClient {
   @override
   Future<Map<String, dynamic>> get(String path, {Map<String, String>? queryParameters}) async {
     final uri = _buildUri(path, queryParameters);
-    return _sendRequest('GET', uri, () async {
-      final headers = await _buildHeaders();
+    return _sendRequest('GET', uri, (headers) async {
       return await _client
           .get(uri, headers: headers)
           .timeout(ApiConstants.connectTimeout);
@@ -61,8 +78,7 @@ class HttpApiClient implements ApiClient {
   @override
   Future<Map<String, dynamic>> post(String path, {Map<String, dynamic>? body}) async {
     final uri = _buildUri(path);
-    return _sendRequest('POST', uri, body: body, () async {
-      final headers = await _buildHeaders();
+    return _sendRequest('POST', uri, body: body, (headers) async {
       final encodedBody = body != null ? jsonEncode(body) : null;
       return await _client
           .post(uri, headers: headers, body: encodedBody)
@@ -73,8 +89,7 @@ class HttpApiClient implements ApiClient {
   @override
   Future<Map<String, dynamic>> put(String path, {Map<String, dynamic>? body}) async {
     final uri = _buildUri(path);
-    return _sendRequest('PUT', uri, body: body, () async {
-      final headers = await _buildHeaders();
+    return _sendRequest('PUT', uri, body: body, (headers) async {
       final encodedBody = body != null ? jsonEncode(body) : null;
       return await _client
           .put(uri, headers: headers, body: encodedBody)
@@ -85,8 +100,7 @@ class HttpApiClient implements ApiClient {
   @override
   Future<Map<String, dynamic>> patch(String path, {Map<String, dynamic>? body}) async {
     final uri = _buildUri(path);
-    return _sendRequest('PATCH', uri, body: body, () async {
-      final headers = await _buildHeaders();
+    return _sendRequest('PATCH', uri, body: body, (headers) async {
       final encodedBody = body != null ? jsonEncode(body) : null;
       return await _client
           .patch(uri, headers: headers, body: encodedBody)
@@ -97,8 +111,7 @@ class HttpApiClient implements ApiClient {
   @override
   Future<Map<String, dynamic>> delete(String path) async {
     final uri = _buildUri(path);
-    return _sendRequest('DELETE', uri, () async {
-      final headers = await _buildHeaders();
+    return _sendRequest('DELETE', uri, (headers) async {
       return await _client
           .delete(uri, headers: headers)
           .timeout(ApiConstants.connectTimeout);
@@ -108,68 +121,54 @@ class HttpApiClient implements ApiClient {
   Future<Map<String, dynamic>> _sendRequest(
     String method,
     Uri uri,
-    Future<http.Response> Function() requestFn, {
+    Future<http.Response> Function(Map<String, String> headers) requestFn, {
     Map<String, dynamic>? body,
   }) async {
+    final headers = await _buildHeaders();
     final tag = pathTag(uri.path);
-    if (kDebugMode) {
-      print('[$tag] Starting request');
-      print('[$tag] URL: $uri');
-      print('[$tag] Method: $method');
-      if (body != null) {
-        final safeBody = Map<String, dynamic>.from(body);
-        if (safeBody.containsKey('password')) {
-          safeBody['password'] = '******';
-        }
-        print('[$tag] Body: $safeBody');
-      }
-      print('[$tag] Request started...');
+
+    final safeBody = body != null ? Map<String, dynamic>.from(body) : null;
+    if (safeBody != null && safeBody.containsKey('password')) {
+      safeBody['password'] = '******';
     }
 
+    print('[$tag] Runtime URL: $uri');
+    print('[$tag] Method: $method');
+    print('[$tag] Headers: $headers');
+    print('[$tag] Body (MASK PASSWORD): $safeBody');
+    print('[$tag] Request started');
+
     try {
-      final response = await requestFn();
-      if (kDebugMode) {
-        print('[$tag] Response received: ${response.statusCode}');
-        print('[$tag] Response body: ${response.body}');
-      }
+      final response = await requestFn(headers);
+      print('[$tag] Response status: ${response.statusCode}');
+      print('[$tag] Response body: ${response.body}');
       return _processResponse(response);
     } on SocketException catch (e) {
-      if (kDebugMode) {
-        print('[$tag] Request failed');
-        print('[$tag] Exception: SocketException');
-        print('[$tag] Message: ${e.message}');
-        print('[$tag] Host: ${e.address?.host}');
-      }
+      print('[$tag] Exception type: SocketException');
+      print('[$tag] Exception message: ${e.message} (Host: ${e.address?.host})');
       throw NetworkException(
         message: 'Network connection failed: ${e.message} (Host: ${e.address?.host ?? uri.host})',
       );
-    } on TimeoutException catch (_) {
-      if (kDebugMode) {
-        print('[$tag] Request failed');
-        print('[$tag] Exception: TimeoutException');
-        print('[$tag] Target: $uri after ${ApiConstants.connectTimeout.inSeconds}s');
-      }
+    } on TimeoutException catch (e) {
+      print('[$tag] Exception type: TimeoutException');
+      print('[$tag] Exception message: ${e.message ?? 'Timeout'} after ${ApiConstants.connectTimeout.inSeconds}s (Target: $uri)');
       throw NetworkException(
         message: 'Server connection timed out (${ApiConstants.connectTimeout.inSeconds}s). Target: $uri',
       );
     } on http.ClientException catch (e) {
-      if (kDebugMode) {
-        print('[$tag] Request failed');
-        print('[$tag] Exception: ClientException');
-        print('[$tag] Message: ${e.message}');
-        print('[$tag] URI: ${e.uri}');
-      }
+      print('[$tag] Exception type: ClientException');
+      print('[$tag] Exception message: ${e.message} (URL: ${e.uri})');
       throw NetworkException(
         message: 'HTTP Client Error: ${e.message} (URL: ${e.uri})',
       );
     } on ApiException catch (e) {
-      if (kDebugMode) {
-        print('[$tag] API Exception [${e.statusCode}]: ${e.message}');
-      }
+      print('[$tag] Exception type: ${e.runtimeType}');
+      print('[$tag] Exception message: [${e.statusCode}] ${e.message}');
       rethrow;
     } catch (e, stack) {
+      print('[$tag] Exception type: ${e.runtimeType}');
+      print('[$tag] Exception message: ${e.toString()}');
       if (kDebugMode) {
-        print('[$tag] Unexpected Exception: $e');
         print('[$tag] StackTrace: $stack');
       }
       throw ApiException(message: 'Unexpected network error: ${e.toString()}');
@@ -236,3 +235,4 @@ class HttpApiClient implements ApiClient {
     }
   }
 }
+

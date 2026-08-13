@@ -49,6 +49,8 @@ class UserCard extends StatelessWidget {
                   children: [
                     Text(
                       user.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -58,6 +60,8 @@ class UserCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       user.email,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 13,
                         color: AppTheme.textSecondary,

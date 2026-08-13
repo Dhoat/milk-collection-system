@@ -38,6 +38,8 @@ class MilkStockCard extends StatelessWidget {
                     transaction.sourceOrReason.isNotEmpty
                         ? transaction.sourceOrReason
                         : (isStockIn ? 'Stock IN' : 'Stock OUT'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -47,6 +49,8 @@ class MilkStockCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${transaction.transactionDate}  ·  ${isStockIn ? "Receiving Entry" : "Manual Stock Out"}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppTheme.textSecondary,
@@ -56,6 +60,8 @@ class MilkStockCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       transaction.notes!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 11,
                         fontStyle: FontStyle.italic,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/routes/app_routes.dart';
+import '../../../core/permissions/role_permissions.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/loading_indicator.dart';
@@ -80,30 +81,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(18.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
                         InkWell(
                           onTap: () => Navigator.of(context).pushNamed(AppRoutes.profile),
                           child: CircleAvatar(
-                            radius: 26,
+                            radius: 24,
                             backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                             child: const Icon(
                               Icons.person,
-                              size: 30,
+                              size: 26,
                               color: AppTheme.primaryColor,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 14),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 user != null ? 'Welcome, ${user.name}' : 'Welcome User',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                  fontSize: 17,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: AppTheme.textPrimary,
                                 ),
@@ -111,14 +114,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(height: 2),
                               Text(
                                 user?.email ?? '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 12,
                                   color: AppTheme.textSecondary,
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
@@ -189,47 +195,57 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.5,
-                    children: [
-                      KpiCard(
-                        title: 'Total Farmers',
-                        value: data.kpis.totalFarmers.toString(),
-                        subtitle: '${data.kpis.activeFarmers} Active',
-                        icon: Icons.people_outline,
-                        iconColor: const Color(0xFF0284C7),
-                        backgroundColor: const Color(0xFFE0F2FE),
-                      ),
-                      KpiCard(
-                        title: 'Milk Quantity',
-                        value: '${data.kpis.todayQuantity.toStringAsFixed(1)} L',
-                        subtitle: 'Today Total',
-                        icon: Icons.water_drop_outlined,
-                        iconColor: const Color(0xFF059669),
-                        backgroundColor: const Color(0xFFD1FAE5),
-                      ),
-                      KpiCard(
-                        title: 'Collection Amount',
-                        value: '₹${data.kpis.todayAmount.toStringAsFixed(0)}',
-                        subtitle: 'Total Value',
-                        icon: Icons.currency_rupee_outlined,
-                        iconColor: const Color(0xFFD97706),
-                        backgroundColor: const Color(0xFFFEF3C7),
-                      ),
-                      KpiCard(
-                        title: 'Coverage Villages',
-                        value: data.kpis.totalVillages.toString(),
-                        subtitle: '${data.kpis.activeVillages} Active',
-                        icon: Icons.location_city_outlined,
-                        iconColor: const Color(0xFF7C3AED),
-                        backgroundColor: const Color(0xFFEDE9FE),
-                      ),
-                    ],
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final double width = constraints.maxWidth;
+                      final int crossAxisCount = width >= 900 ? 4 : 2;
+                      final double childAspectRatio = width < 360
+                          ? 1.15
+                          : (width < 600 ? 1.25 : 1.6);
+
+                      return GridView.count(
+                        crossAxisCount: crossAxisCount,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: childAspectRatio,
+                        children: [
+                          KpiCard(
+                            title: 'Total Farmers',
+                            value: data.kpis.totalFarmers.toString(),
+                            subtitle: '${data.kpis.activeFarmers} Active',
+                            icon: Icons.people_outline,
+                            iconColor: const Color(0xFF0284C7),
+                            backgroundColor: const Color(0xFFE0F2FE),
+                          ),
+                          KpiCard(
+                            title: 'Milk Quantity',
+                            value: '${data.kpis.todayQuantity.toStringAsFixed(1)} L',
+                            subtitle: 'Today Total',
+                            icon: Icons.water_drop_outlined,
+                            iconColor: const Color(0xFF059669),
+                            backgroundColor: const Color(0xFFD1FAE5),
+                          ),
+                          KpiCard(
+                            title: 'Collection Amount',
+                            value: '₹${data.kpis.todayAmount.toStringAsFixed(0)}',
+                            subtitle: 'Total Value',
+                            icon: Icons.currency_rupee_outlined,
+                            iconColor: const Color(0xFFD97706),
+                            backgroundColor: const Color(0xFFFEF3C7),
+                          ),
+                          KpiCard(
+                            title: 'Coverage Villages',
+                            value: data.kpis.totalVillages.toString(),
+                            subtitle: '${data.kpis.activeVillages} Active',
+                            icon: Icons.location_city_outlined,
+                            iconColor: const Color(0xFF7C3AED),
+                            backgroundColor: const Color(0xFFEDE9FE),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: 24),
 
@@ -268,16 +284,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           Icon(Icons.wb_sunny_outlined, color: Color(0xFFEA580C), size: 18),
                                           SizedBox(width: 6),
-                                          Text(
-                                            'Morning Shift',
-                                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF9A3412)),
+                                          Expanded(
+                                            child: Text(
+                                              'Morning Shift',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF9A3412)),
+                                            ),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 6),
-                                      Text(
-                                        '${data.todayOverview.morning.quantity.toStringAsFixed(1)} Litres',
-                                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF9A3412)),
+                                      FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          '${data.todayOverview.morning.quantity.toStringAsFixed(1)} Litres',
+                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF9A3412)),
+                                        ),
                                       ),
                                       Text(
                                         '${data.todayOverview.morning.farmers} Farmers',
@@ -303,16 +327,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           Icon(Icons.nights_stay_outlined, color: Color(0xFF0284C7), size: 18),
                                           SizedBox(width: 6),
-                                          Text(
-                                            'Evening Shift',
-                                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF075985)),
+                                          Expanded(
+                                            child: Text(
+                                              'Evening Shift',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF075985)),
+                                            ),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 6),
-                                      Text(
-                                        '${data.todayOverview.evening.quantity.toStringAsFixed(1)} Litres',
-                                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF075985)),
+                                      FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          '${data.todayOverview.evening.quantity.toStringAsFixed(1)} Litres',
+                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF075985)),
+                                        ),
                                       ),
                                       Text(
                                         '${data.todayOverview.evening.farmers} Farmers',
@@ -341,82 +373,100 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                GridView.count(
-                  crossAxisCount: 3,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1.1,
-                  children: [
-                    QuickActionCard(
-                      label: 'Collect Milk',
-                      icon: Icons.add_circle_outline,
-                      color: const Color(0xFF059669),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.milkCollections),
-                    ),
-                    QuickActionCard(
-                      label: 'Milk Receiving',
-                      icon: Icons.unarchive_outlined,
-                      color: const Color(0xFF0D9488),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.milkReceivings),
-                    ),
-                    QuickActionCard(
-                      label: 'Milk Stock',
-                      icon: Icons.inventory_2_outlined,
-                      color: const Color(0xFF10B981),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.milkStocks),
-                    ),
-                    QuickActionCard(
-                      label: 'Farmers',
-                      icon: Icons.person_search_outlined,
-                      color: const Color(0xFF0284C7),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.farmers),
-                    ),
-                    QuickActionCard(
-                      label: 'Villages',
-                      icon: Icons.location_city_outlined,
-                      color: const Color(0xFF7C3AED),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.villages),
-                    ),
-                    QuickActionCard(
-                      label: 'Shops',
-                      icon: Icons.storefront_outlined,
-                      color: const Color(0xFFD97706),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.shops),
-                    ),
-                    QuickActionCard(
-                      label: 'Shop Orders',
-                      icon: Icons.shopping_bag_outlined,
-                      color: const Color(0xFFEA580C),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.shopOrders),
-                    ),
-                    QuickActionCard(
-                      label: 'Deliveries',
-                      icon: Icons.local_shipping_outlined,
-                      color: const Color(0xFF0284C7),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.deliveries),
-                    ),
-                    QuickActionCard(
-                      label: 'Reports',
-                      icon: Icons.bar_chart_outlined,
-                      color: const Color(0xFF059669),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.reports),
-                    ),
-                    if (authProvider.user?.isSuperAdmin == true)
-                      QuickActionCard(
-                        label: 'User Mgmt',
-                        icon: Icons.manage_accounts_outlined,
-                        color: const Color(0xFF7E22CE),
-                        onTap: () => Navigator.of(context).pushNamed(AppRoutes.users),
-                      ),
-                    QuickActionCard(
-                      label: 'My Profile',
-                      icon: Icons.account_circle_outlined,
-                      color: const Color(0xFF4F46E5),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.profile),
-                    ),
-                  ],
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double width = constraints.maxWidth;
+                    final int crossAxisCount = width >= 900 ? 6 : (width >= 600 ? 4 : 3);
+                    final double childAspectRatio = width < 360 ? 0.95 : 1.05;
+
+                    return GridView.count(
+                      crossAxisCount: crossAxisCount,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: childAspectRatio,
+                      children: [
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.milkCollection))
+                          QuickActionCard(
+                            label: 'Collect Milk',
+                            icon: Icons.add_circle_outline,
+                            color: const Color(0xFF059669),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.milkCollections),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.milkReceiving))
+                          QuickActionCard(
+                            label: 'Milk Receiving',
+                            icon: Icons.unarchive_outlined,
+                            color: const Color(0xFF0D9488),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.milkReceivings),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.milkStock))
+                          QuickActionCard(
+                            label: 'Milk Stock',
+                            icon: Icons.inventory_2_outlined,
+                            color: const Color(0xFF10B981),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.milkStocks),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.farmers))
+                          QuickActionCard(
+                            label: 'Farmers',
+                            icon: Icons.person_search_outlined,
+                            color: const Color(0xFF0284C7),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.farmers),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.villages))
+                          QuickActionCard(
+                            label: 'Villages',
+                            icon: Icons.location_city_outlined,
+                            color: const Color(0xFF7C3AED),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.villages),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.shops))
+                          QuickActionCard(
+                            label: 'Shops',
+                            icon: Icons.storefront_outlined,
+                            color: const Color(0xFFD97706),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.shops),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.shopOrders))
+                          QuickActionCard(
+                            label: 'Shop Orders',
+                            icon: Icons.shopping_bag_outlined,
+                            color: const Color(0xFFEA580C),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.shopOrders),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.deliveries))
+                          QuickActionCard(
+                            label: 'Deliveries',
+                            icon: Icons.local_shipping_outlined,
+                            color: const Color(0xFF0284C7),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.deliveries),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.reports))
+                          QuickActionCard(
+                            label: 'Reports',
+                            icon: Icons.bar_chart_outlined,
+                            color: const Color(0xFF059669),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.reports),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.users))
+                          QuickActionCard(
+                            label: 'User Mgmt',
+                            icon: Icons.manage_accounts_outlined,
+                            color: const Color(0xFF7E22CE),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.users),
+                          ),
+                        if (RolePermissions.canAccessModule(authProvider.user?.role, AppModule.profile))
+                          QuickActionCard(
+                            label: 'My Profile',
+                            icon: Icons.account_circle_outlined,
+                            color: const Color(0xFF4F46E5),
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.profile),
+                          ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
 

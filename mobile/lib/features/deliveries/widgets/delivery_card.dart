@@ -38,43 +38,52 @@ class DeliveryCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(
-                          Icons.local_shipping_outlined,
-                          color: AppTheme.primaryColor,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            delivery.deliveryNumber,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
-                            ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          Text(
-                            'Date: ${delivery.deliveryDate}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppTheme.textSecondary,
-                            ),
+                          child: const Icon(
+                            Icons.local_shipping_outlined,
+                            color: AppTheme.primaryColor,
+                            size: 20,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                delivery.deliveryNumber,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                'Date: ${delivery.deliveryDate}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   DeliveryStatusBadge(status: delivery.status),
                 ],
               ),
@@ -93,6 +102,7 @@ class DeliveryCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: AppTheme.textPrimary,
                       ),
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -110,6 +120,7 @@ class DeliveryCard extends StatelessWidget {
                       child: Text(
                         delivery.deliveryAddress!,
                         style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -122,25 +133,31 @@ class DeliveryCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.person_outline, size: 16, color: AppTheme.textSecondary),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Driver: $driverName',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: delivery.assignedStaff != null ? FontWeight.w500 : FontWeight.normal,
-                          color: delivery.assignedStaff != null ? AppTheme.textPrimary : Colors.orange.shade800,
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.person_outline, size: 16, color: AppTheme.textSecondary),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'Driver: $driverName',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: delivery.assignedStaff != null ? FontWeight.w500 : FontWeight.normal,
+                              color: delivery.assignedStaff != null ? AppTheme.textPrimary : Colors.orange.shade800,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   if (onUpdateStatus != null && !delivery.isTerminalState)
                     TextButton.icon(
                       onPressed: onUpdateStatus,
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
