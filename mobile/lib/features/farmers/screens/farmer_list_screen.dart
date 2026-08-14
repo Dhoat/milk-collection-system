@@ -5,6 +5,8 @@ import '../../../app/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import '../../../core/widgets/role_bottom_nav.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../villages/providers/village_provider.dart';
 import '../models/farmer_model.dart';
 import '../providers/farmer_provider.dart';
@@ -19,6 +21,7 @@ class FarmerListScreen extends StatefulWidget {
 
 class _FarmerListScreenState extends State<FarmerListScreen> {
   final _searchController = TextEditingController();
+  bool? _selectedStatus; // null: All, true: Active, false: Inactive
 
   @override
   void initState() {
@@ -79,7 +82,16 @@ class _FarmerListScreenState extends State<FarmerListScreen> {
   Widget build(BuildContext context) {
     final farmerProvider = Provider.of<FarmerProvider>(context);
     final villageProvider = Provider.of<VillageProvider>(context);
-    final list = farmerProvider.farmers;
+    final allFarmersList = farmerProvider.farmers;
+
+    final filteredList = _selectedStatus == null
+        ? allFarmersList
+        : allFarmersList.where((f) => f.status == _selectedStatus).toList();
+
+    final activeCount = farmerProvider.allFarmers.where((f) => f.status).length;
+    final inactiveCount = farmerProvider.allFarmers.where((f) => !f.status).length;
+    final totalCount = farmerProvider.allFarmers.length;
+
     final villages = villageProvider.allVillages;
 
     return Scaffold(
@@ -107,7 +119,7 @@ class _FarmerListScreenState extends State<FarmerListScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Search & Village Filter Bar
+              // Search & Filter Header Bar
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -130,18 +142,39 @@ class _FarmerListScreenState extends State<FarmerListScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    if (villages.isNotEmpty)
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            FilterChip(
-                              label: const Text('All Villages'),
-                              selected: farmerProvider.selectedVillageId == null,
-                              onSelected: (_) => farmerProvider.setVillageFilter(null),
-                              selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-                              checkmarkColor: AppTheme.primaryColor,
-                            ),
+
+                    // Status & Village Filter Chips matching reference design
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          FilterChip(
+                            label: Text('All ($totalCount)'),
+                            selected: _selectedStatus == null && farmerProvider.selectedVillageId == null,
+                            onSelected: (_) {
+                              setState(() => _selectedStatus = null);
+                              farmerProvider.setVillageFilter(null);
+                            },
+                            selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+                            checkmarkColor: AppTheme.primaryColor,
+                          ),
+                          const SizedBox(width: 8),
+                          FilterChip(
+                            label: Text('Active ($activeCount)'),
+                            selected: _selectedStatus == true,
+                            onSelected: (_) => setState(() => _selectedStatus = true),
+                            selectedColor: const Color(0xFFD1FAE5),
+                            checkmarkColor: const Color(0xFF065F46),
+                          ),
+                          const SizedBox(width: 8),
+                          FilterChip(
+                            label: Text('Inactive ($inactiveCount)'),
+                            selected: _selectedStatus == false,
+                            onSelected: (_) => setState(() => _selectedStatus = false),
+                            selectedColor: const Color(0xFFFEE2E2),
+                            checkmarkColor: const Color(0xFF991B1B),
+                          ),
+                          if (villages.isNotEmpty) ...[
                             const SizedBox(width: 8),
                             ...villages.map(
                               (v) => Padding(
@@ -156,8 +189,9 @@ class _FarmerListScreenState extends State<FarmerListScreen> {
                               ),
                             ),
                           ],
-                        ),
+                        ],
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -197,7 +231,7 @@ class _FarmerListScreenState extends State<FarmerListScreen> {
                               ],
                             ),
                           )
-                        : list.isEmpty
+                        : filteredList.isEmpty
                             ? Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -205,7 +239,7 @@ class _FarmerListScreenState extends State<FarmerListScreen> {
                                     const Icon(Icons.people_outline, size: 56, color: Colors.grey),
                                     const SizedBox(height: 12),
                                     Text(
-                                      farmerProvider.searchQuery.isNotEmpty || farmerProvider.selectedVillageId != null
+                                      farmerProvider.searchQuery.isNotEmpty || farmerProvider.selectedVillageId != null || _selectedStatus != null
                                           ? 'No farmers matching filter criteria'
                                           : 'No farmers registered yet.',
                                       style: const TextStyle(fontSize: 15, color: AppTheme.textSecondary),
@@ -222,10 +256,10 @@ class _FarmerListScreenState extends State<FarmerListScreen> {
                                 ),
                               )
                             : ListView.builder(
-                                itemCount: list.length,
+                                itemCount: filteredList.length,
                                 padding: const EdgeInsets.only(bottom: 80),
                                 itemBuilder: (context, index) {
-                                  final farmer = list[index];
+                                  final farmer = filteredList[index];
                                   return FarmerCard(
                                     farmer: farmer,
                                     onTap: () {
@@ -247,6 +281,12 @@ class _FarmerListScreenState extends State<FarmerListScreen> {
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Consumer<AuthProvider>(
+        builder: (context, auth, _) => RoleBottomNav(
+          currentRoute: AppRoutes.farmers,
+          userRole: auth.user?.role,
         ),
       ),
     );

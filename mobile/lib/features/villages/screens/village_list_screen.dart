@@ -5,6 +5,8 @@ import '../../../app/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import '../../../core/widgets/role_bottom_nav.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../models/village_model.dart';
 import '../providers/village_provider.dart';
 import '../widgets/village_card.dart';
@@ -206,6 +208,12 @@ class _VillageListScreenState extends State<VillageListScreen> {
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Consumer<AuthProvider>(
+        builder: (context, auth, _) => RoleBottomNav(
+          currentRoute: AppRoutes.villages,
+          userRole: auth.user?.role,
         ),
       ),
     );

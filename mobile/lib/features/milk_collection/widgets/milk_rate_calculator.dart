@@ -21,20 +21,15 @@ class MilkRateCalculator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(
-          color: isFinal
-              ? AppTheme.primaryColor
-              : AppTheme.accentColor.withValues(alpha: 0.5),
+    return Container(
+      decoration: BoxDecoration(
+        color: isFinal ? AppTheme.pastelGreenBg : const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isFinal ? AppTheme.primaryColor.withValues(alpha: 0.3) : const Color(0xFFFDE68A),
           width: 1.5,
         ),
       ),
-      color: isFinal
-          ? const Color(0xFFECFDF5)
-          : const Color(0xFFFFFBEB),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -58,12 +53,12 @@ class MilkRateCalculator extends StatelessWidget {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: isFinal
-                        ? AppTheme.primaryColor.withValues(alpha: 0.1)
+                        ? AppTheme.primaryColor.withValues(alpha: 0.15)
                         : const Color(0xFFFEF3C7),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     isFinal ? 'Server Verified' : 'Live Estimate',
@@ -76,7 +71,9 @@ class MilkRateCalculator extends StatelessWidget {
                 ),
               ],
             ),
-            const Divider(height: 20),
+            const SizedBox(height: 12),
+            const Divider(height: 1, color: Color(0xFFE2E8F0)),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -88,16 +85,18 @@ class MilkRateCalculator extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isFinal ? const Color(0xFFA7F3D0) : const Color(0xFFFDE68A),
                 ),
               ),
               child: Row(
                 children: [
+                  const Icon(Icons.payments_outlined, color: AppTheme.primaryColor, size: 20),
+                  const SizedBox(width: 8),
                   const Text(
                     'Total Payable Amount:',
                     style: TextStyle(
@@ -107,12 +106,15 @@ class MilkRateCalculator extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  Text(
-                    '₹ ${estimatedAmount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isFinal ? AppTheme.primaryColor : const Color(0xFFD97706),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '₹ ${estimatedAmount.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: isFinal ? AppTheme.primaryColor : const Color(0xFFD97706),
+                      ),
                     ),
                   ),
                 ],

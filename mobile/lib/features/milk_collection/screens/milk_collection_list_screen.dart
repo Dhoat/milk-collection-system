@@ -5,6 +5,8 @@ import '../../../app/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import '../../../core/widgets/role_bottom_nav.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../models/milk_collection_model.dart';
 import '../providers/milk_collection_provider.dart';
 import '../widgets/milk_collection_card.dart';
@@ -292,6 +294,12 @@ class _MilkCollectionListScreenState extends State<MilkCollectionListScreen> {
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Consumer<AuthProvider>(
+        builder: (context, auth, _) => RoleBottomNav(
+          currentRoute: AppRoutes.milkCollections,
+          userRole: auth.user?.role,
         ),
       ),
     );

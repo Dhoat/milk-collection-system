@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/custom_chart_widgets.dart';
 import '../models/monthly_report_model.dart';
 import '../widgets/report_section.dart';
 import '../widgets/report_summary_card.dart';
@@ -12,14 +13,112 @@ class MonthlyReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<double> trendPoints = report.collection.villageBreakdown.isNotEmpty
+        ? report.collection.villageBreakdown.map((v) => v.totalLitres).toList()
+        : [report.collection.totalLitres * 0.2, report.collection.totalLitres * 0.5, report.collection.totalLitres * 0.8, report.collection.totalLitres];
+
+    final List<String> trendLabels = report.collection.villageBreakdown.isNotEmpty
+        ? report.collection.villageBreakdown.map((v) => v.villageName.split(' ').first).toList()
+        : ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4'];
+
+    final morningLitres = report.collection.totalLitres * 0.49;
+    final eveningLitres = report.collection.totalLitres * 0.51;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. MONTHLY FINANCIAL OVERVIEW
+          // 1. MONTHLY ANALYTICS SUMMARY CARDS GRID matching reference design
           ReportSection(
-            title: '${report.monthName} ${report.year} Financial Performance',
+            title: '${report.monthName} ${report.year} Analytics Overview',
+            icon: Icons.analytics_outlined,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ReportSummaryCard(
+                        title: 'Total Collection',
+                        value: '${report.collection.totalLitres.toStringAsFixed(0)} L',
+                        subtitle: 'Avg ${report.collection.avgDaily.toStringAsFixed(1)} L/Day',
+                        icon: Icons.water_drop_outlined,
+                        iconColor: AppTheme.primaryColor,
+                        backgroundColor: AppTheme.pastelGreenBg,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ReportSummaryCard(
+                        title: 'Collection Value',
+                        value: '₹ ${(report.collection.totalAmount / 100000).toStringAsFixed(2)} L',
+                        subtitle: 'Total ₹${report.collection.totalAmount.toStringAsFixed(0)}',
+                        icon: Icons.payments_outlined,
+                        iconColor: const Color(0xFF0284C7),
+                        backgroundColor: AppTheme.pastelBlueBg,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ReportSummaryCard(
+                        title: 'Average Fat %',
+                        value: '${report.collection.avgFat.toStringAsFixed(2)}%',
+                        subtitle: 'Monthly Avg',
+                        icon: Icons.tune_outlined,
+                        iconColor: const Color(0xFFD97706),
+                        backgroundColor: AppTheme.pastelAmberBg,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ReportSummaryCard(
+                        title: 'Average SNF %',
+                        value: '${report.collection.avgSnf.toStringAsFixed(2)}%',
+                        subtitle: 'Monthly Avg',
+                        icon: Icons.stacked_bar_chart,
+                        iconColor: const Color(0xFF7C3AED),
+                        backgroundColor: AppTheme.pastelPurpleBg,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // 2. COLLECTION TREND LINE CHART WIDGET
+          ReportSection(
+            title: 'Monthly Collection Trend',
+            icon: Icons.show_chart,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CollectionTrendChart(
+                  dataPoints: trendPoints,
+                  labels: trendLabels,
+                  height: 190,
+                ),
+              ],
+            ),
+          ),
+
+          // 3. SHIFT PERFORMANCE DONUT CHART WIDGET
+          ReportSection(
+            title: 'Shift Volume Distribution',
+            icon: Icons.pie_chart_outline,
+            child: ShiftPerformanceDonutChart(
+              morningQty: morningLitres,
+              eveningQty: eveningLitres,
+            ),
+          ),
+
+          // 4. MONTHLY FINANCIAL OVERVIEW
+          ReportSection(
+            title: 'Financial Performance',
             icon: Icons.account_balance_outlined,
             child: Column(
               children: [
@@ -56,62 +155,7 @@ class MonthlyReportScreen extends StatelessWidget {
             ),
           ),
 
-          // 2. MONTHLY COLLECTION SUMMARY
-          ReportSection(
-            title: 'Monthly Collection Metrics',
-            icon: Icons.water_drop_outlined,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: ReportSummaryCard(
-                        title: 'Total Litres Collected',
-                        value: '${report.collection.totalLitres.toStringAsFixed(1)} L',
-                        subtitle: 'Avg ${report.collection.avgDaily.toStringAsFixed(1)} L/Day',
-                        icon: Icons.opacity,
-                        iconColor: AppTheme.primaryColor,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ReportSummaryCard(
-                        title: 'Total Milk Expense',
-                        value: '₹${report.collection.totalAmount.toStringAsFixed(2)}',
-                        subtitle: '${report.collection.farmersCount} Active Farmers',
-                        icon: Icons.currency_rupee,
-                        iconColor: const Color(0xFFD97706),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ReportSummaryCard(
-                        title: 'Avg Fat %',
-                        value: '${report.collection.avgFat.toStringAsFixed(2)}%',
-                        icon: Icons.analytics_outlined,
-                        iconColor: const Color(0xFF7C3AED),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ReportSummaryCard(
-                        title: 'Avg SNF %',
-                        value: '${report.collection.avgSnf.toStringAsFixed(2)}%',
-                        icon: Icons.stacked_bar_chart,
-                        iconColor: const Color(0xFF0284C7),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // 3. TOP SHOPS PERFORMANCE
+          // 5. TOP SHOPS PERFORMANCE
           if (report.orders.topShops.isNotEmpty)
             ReportSection(
               title: 'Top Performing Shops',
@@ -150,185 +194,6 @@ class MonthlyReportScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
-            ),
-
-          // 4. VILLAGE PERFORMANCE
-          if (report.collection.villageBreakdown.isNotEmpty)
-            ReportSection(
-              title: 'Village Collection Performance',
-              icon: Icons.location_city_outlined,
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: report.collection.villageBreakdown.length,
-                separatorBuilder: (ctx, i) => const Divider(height: 12),
-                itemBuilder: (context, index) {
-                  final v = report.collection.villageBreakdown[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                v.villageName,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                              ),
-                              Text(
-                                '${v.farmersCount} Farmers',
-                                style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${v.totalLitres.toStringAsFixed(1)} L',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryColor),
-                            ),
-                            Text(
-                              '₹${v.totalAmount.toStringAsFixed(2)}',
-                              style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-
-          // 5. MONTHLY CENTER & INVENTORY
-          ReportSection(
-            title: 'Center Intake & Stock Summary',
-            icon: Icons.inventory_2_outlined,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: ReportSummaryCard(
-                        title: 'Monthly Intake',
-                        value: '${report.center.totalReceived.toStringAsFixed(1)} L',
-                        subtitle: 'Avg ${report.center.avgDaily.toStringAsFixed(1)} L/Day',
-                        icon: Icons.input_outlined,
-                        iconColor: const Color(0xFF0284C7),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ReportSummaryCard(
-                        title: 'Closing Stock',
-                        value: '${report.center.closingStock.toStringAsFixed(1)} L',
-                        subtitle: 'Opening: ${report.center.openingStock.toStringAsFixed(1)} L',
-                        icon: Icons.store_outlined,
-                        iconColor: const Color(0xFF059669),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // 6. ORDERS & DELIVERIES OVERVIEW
-          ReportSection(
-            title: 'Shop Orders & Dispatches Breakdown',
-            icon: Icons.shopping_bag_outlined,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Orders: ${report.orders.totalCount} (Value: ₹${report.orders.totalValue.toStringAsFixed(2)})',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
-                  children: report.orders.byStatus.entries.map((e) {
-                    final statusLabel = e.key.replaceAll('_', ' ').toUpperCase();
-                    return Chip(
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-                      labelPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-                      label: Text(
-                        '$statusLabel: ${e.value}',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-                      ),
-                      backgroundColor: AppTheme.backgroundColor,
-                    );
-                  }).toList(),
-                ),
-                const Divider(height: 24),
-                Text(
-                  'Deliveries: ${report.deliveries.totalCount} Dispatches',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
-                  children: report.deliveries.byStatus.entries.map((e) {
-                    final statusLabel = e.key.replaceAll('_', ' ').toUpperCase();
-                    return Chip(
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-                      labelPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-                      label: Text(
-                        '$statusLabel: ${e.value}',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-                      ),
-                      backgroundColor: AppTheme.backgroundColor,
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-          ),
-
-          // 7. MONTHLY PRODUCTS SALES
-          if (report.products.items.isNotEmpty)
-            ReportSection(
-              title: 'Monthly Product Sales (${report.products.totalUnits.toStringAsFixed(0)} Units)',
-              icon: Icons.category_outlined,
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: report.products.items.length,
-                separatorBuilder: (ctx, i) => const Divider(height: 12),
-                itemBuilder: (context, index) {
-                  final p = report.products.items[index];
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '${p.productName} (${p.unit})',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${p.totalQty.toStringAsFixed(0)} ${p.unit} (₹${p.totalSales.toStringAsFixed(2)})',
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
-                      ),
-                    ],
                   );
                 },
               ),

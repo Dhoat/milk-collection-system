@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _rememberMe = true;
 
   @override
   void dispose() {
@@ -65,142 +66,244 @@ class _LoginScreenState extends State<LoginScreen> {
         : null;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Branding Logo Header
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.local_shipping_outlined,
-                    size: 56,
-                    color: AppTheme.primaryColor,
-                  ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 40,
                 ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Milk Center System',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Sign in to access your dairy portal',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 32),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const Spacer(),
 
-                // Error Notification Banner
-                if (authProvider.errorMessage != null)
-                  ErrorBanner(
-                    message: authProvider.errorMessage!,
-                    onDismiss: () => authProvider.clearError(),
-                  ),
-
-                // Login Form Card
-                Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          CustomTextField(
-                            controller: _emailController,
-                            label: 'Email Address',
-                            hint: 'superadmin@dairy.com',
-                            keyboardType: TextInputType.emailAddress,
-                            prefixIcon: const Icon(Icons.email_outlined, size: 20),
-                            errorText: emailError,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Email address is required';
-                              }
-                              final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                              if (!emailRegex.hasMatch(value.trim())) {
-                                return 'Please enter a valid email address';
-                              }
-                              return null;
+                      // Top Circular/Rounded App Logo matching official branding
+                      Container(
+                        width: 96,
+                        height: 96,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x33059669),
+                              blurRadius: 20,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: Image.asset(
+                            'assets/images/app_logo.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryColor,
+                                child: const Icon(
+                                  Icons.pets,
+                                  size: 48,
+                                  color: Colors.white,
+                                ),
+                              );
                             },
                           ),
-                          const SizedBox(height: 20),
-                          CustomTextField(
-                            controller: _passwordController,
-                            label: 'Password',
-                            hint: '••••••••',
-                            obscureText: _obscurePassword,
-                            prefixIcon: const Icon(Icons.lock_outline, size: 20),
-                            errorText: passwordError,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Brand Headline & Subtitle matching specs exactly
+                      const Text(
+                        'Dairy Management',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryColor,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Milk Center Management System',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.textSecondary,
+                          letterSpacing: 0.1,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Error Notification Banner
+                      if (authProvider.errorMessage != null) ...[
+                        ErrorBanner(
+                          message: authProvider.errorMessage!,
+                          onDismiss: () => authProvider.clearError(),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      // Login Form
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            CustomTextField(
+                              controller: _emailController,
+                              label: 'Email Address',
+                              hint: 'admin@dairy.com',
+                              keyboardType: TextInputType.emailAddress,
+                              prefixIcon: const Icon(Icons.email_outlined, size: 20, color: AppTheme.textMuted),
+                              errorText: emailError,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Email address is required';
+                                }
+                                final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                if (!emailRegex.hasMatch(value.trim())) {
+                                  return 'Please enter a valid email address';
+                                }
+                                return null;
                               },
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Password is required';
-                              }
-                              if (value.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
+                            const SizedBox(height: 16),
+                            CustomTextField(
+                              controller: _passwordController,
+                              label: 'Password',
+                              hint: '••••••••',
+                              obscureText: _obscurePassword,
+                              prefixIcon: const Icon(Icons.lock_outline, size: 20, color: AppTheme.textMuted),
+                              errorText: passwordError,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                                  size: 20,
+                                  color: AppTheme.textMuted,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Password is required';
+                                }
+                                if (value.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+
+                            // Remember Me & Forgot Password Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: Checkbox(
+                                        value: _rememberMe,
+                                        activeColor: AppTheme.primaryColor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        onChanged: (val) {
+                                          setState(() {
+                                            _rememberMe = val ?? true;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Remember Me',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: AppTheme.textSecondary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Please contact your administrator to reset password.'),
+                                      ),
+                                    );
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: const Text(
+                                    'Forgot Password?',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: AppTheme.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+
+                            CustomButton(
+                              text: 'Sign In',
+                              isLoading: authProvider.isAuthenticating,
+                              onPressed: _handleLogin,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const Spacer(),
+                      const SizedBox(height: 24),
+
+                      // Footer Branding
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Powered by ',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.textMuted,
+                            ),
                           ),
-                          const SizedBox(height: 28),
-                          CustomButton(
-                            text: 'Sign In',
-                            isLoading: authProvider.isAuthenticating,
-                            onPressed: _handleLogin,
+                          Text(
+                            'MilkCenter',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor.withValues(alpha: 0.9),
+                            ),
                           ),
                         ],
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Powered by Milk Center Management System',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF9CA3AF),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

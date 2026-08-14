@@ -18,7 +18,8 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Milk Center System'), findsOneWidget);
+    expect(find.text('Dairy Management'), findsOneWidget);
+    expect(find.text('Milk Center Management System'), findsOneWidget);
     expect(find.text('Email Address'), findsOneWidget);
     expect(find.text('Password'), findsOneWidget);
     expect(find.byType(ElevatedButton), findsOneWidget);

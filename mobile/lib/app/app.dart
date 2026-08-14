@@ -5,11 +5,11 @@ import '../core/network/api_client.dart';
 import '../core/storage/secure_token_storage.dart';
 import '../core/storage/token_storage_interface.dart';
 import '../core/theme/app_theme.dart';
-import '../core/widgets/loading_indicator.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../features/auth/repositories/auth_repository.dart';
 import '../features/auth/repositories/auth_repository_interface.dart';
 import '../features/auth/screens/login_screen.dart';
+import '../features/auth/screens/splash_screen.dart';
 import '../features/dashboard/providers/dashboard_provider.dart';
 import '../features/dashboard/repositories/dashboard_repository.dart';
 import '../features/dashboard/repositories/dashboard_repository_interface.dart';
@@ -204,16 +204,14 @@ class MilkCenterApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Milk Center System',
+        title: 'Dairy Management',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         onGenerateRoute: AppRoutes.onGenerateRoute,
         home: Consumer<AuthProvider>(
           builder: (context, authProvider, _) {
             if (authProvider.isChecking) {
-              return const Scaffold(
-                body: LoadingIndicator(message: 'Verifying session...'),
-              );
+              return const SplashScreen(loadingMessage: 'Verifying session...');
             }
             if (authProvider.isAuthenticated) {
               return const HomeScreen();

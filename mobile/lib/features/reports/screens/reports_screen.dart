@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import '../../../core/widgets/role_bottom_nav.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../providers/report_provider.dart';
 import '../widgets/report_filter_bar.dart';
 import 'daily_report_screen.dart';
@@ -48,6 +51,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
             child: _buildReportBody(provider),
           ),
         ],
+      ),
+      bottomNavigationBar: Consumer<AuthProvider>(
+        builder: (context, auth, _) => RoleBottomNav(
+          currentRoute: AppRoutes.reports,
+          userRole: auth.user?.role,
+        ),
       ),
     );
   }

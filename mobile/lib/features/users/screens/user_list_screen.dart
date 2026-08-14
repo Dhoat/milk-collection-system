@@ -5,7 +5,9 @@ import '../../../app/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import '../../../core/widgets/role_bottom_nav.dart';
 import '../../auth/models/user_model.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../providers/user_provider.dart';
 import '../widgets/user_card.dart';
 
@@ -136,6 +138,12 @@ class _UserListScreenState extends State<UserListScreen> {
             child: _buildUserListBody(provider),
           ),
         ],
+      ),
+      bottomNavigationBar: Consumer<AuthProvider>(
+        builder: (context, auth, _) => RoleBottomNav(
+          currentRoute: AppRoutes.users,
+          userRole: auth.user?.role,
+        ),
       ),
     );
   }
