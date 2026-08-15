@@ -1,29 +1,38 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
+        <x-admin.page-header title="{{ __('Account Profile') }}" description="{{ __('Manage your personal account details, change password, and security preferences.') }}" />
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
+    <!-- Profile Overview Card Header -->
+    <div class="w-full space-y-6">
+        <x-admin.card title="{{ __('User Profile Details') }}">
+            <div class="flex items-center gap-4 pb-6 border-b border-slate-100">
+                <div class="w-16 h-16 rounded-2xl bg-[#005BAC]/10 border border-[#005BAC]/20 text-[#005BAC] flex items-center justify-center text-2xl font-black">
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </div>
+                <div>
+                    <h2 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                        {{ auth()->user()->name }}
+                        <span class="px-2.5 py-0.5 bg-blue-50 text-[#005BAC] border border-blue-200 rounded-full text-xs font-extrabold">{{ strtoupper(str_replace('_', ' ', auth()->user()->role ?? 'User')) }}</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 font-mono font-semibold mt-0.5">{{ auth()->user()->email }}</p>
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+            <div class="pt-6 space-y-8">
+                <!-- Update Profile Information Form -->
+                @include('profile.partials.update-profile-information-form')
+
+                <!-- Update Password Form -->
+                <div class="pt-8 border-t border-slate-100">
                     @include('profile.partials.update-password-form')
                 </div>
-            </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+                <!-- Delete Account Form -->
+                <div class="pt-8 border-t border-slate-100">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
-        </div>
+        </x-admin.card>
     </div>
-</x-app-layout>
+</x-admin-layout>

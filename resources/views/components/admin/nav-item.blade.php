@@ -8,23 +8,23 @@
 @php
     $isActive = $active && request()->routeIs($active);
     
-    $classes = 'flex items-center gap-3 px-3 py-2 text-sm rounded-xl transition-all duration-200 group ';
+    $classes = 'flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group ';
     
     if ($disabled) {
-        $classes .= 'text-slate-400 opacity-60 cursor-not-allowed pointer-events-none';
+        $classes .= 'text-slate-400 opacity-50 cursor-not-allowed pointer-events-none';
     } elseif ($isActive) {
-        $classes .= 'bg-indigo-50/80 text-indigo-600 font-semibold shadow-sm shadow-indigo-100/50';
+        $classes .= 'bg-[#005BAC] text-white font-semibold shadow-md shadow-sky-900/30';
     } else {
-        $classes .= 'text-slate-600 hover:text-slate-900 hover:bg-slate-50/80';
+        $classes .= 'text-slate-300 hover:text-white hover:bg-white/10';
     }
     
-    $iconClasses = 'w-5 h-5 transition-colors duration-200 ';
+    $iconClasses = 'w-5 h-5 transition-colors duration-200 shrink-0 ';
     if ($disabled) {
-        $iconClasses .= 'text-slate-300';
+        $iconClasses .= 'text-slate-500';
     } elseif ($isActive) {
-        $iconClasses .= 'text-indigo-600';
+        $iconClasses .= 'text-white';
     } else {
-        $iconClasses .= 'text-slate-400 group-hover:text-slate-500';
+        $iconClasses .= 'text-sky-200/70 group-hover:text-white';
     }
 @endphp
 
@@ -35,7 +35,7 @@
         </svg>
         <span class="flex-grow truncate">{{ $slot }}</span>
         @if($badge)
-            <span class="px-1.5 py-0.5 text-xxs font-medium rounded bg-slate-100 border border-slate-200/50 text-slate-400 uppercase tracking-wider scale-90">{{ $badge }}</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-slate-700 text-slate-300 uppercase tracking-wider">{{ $badge }}</span>
         @endif
     </div>
 @else
@@ -45,7 +45,7 @@
         </svg>
         <span class="flex-grow truncate">{{ $slot }}</span>
         @if($badge)
-            <span class="px-1.5 py-0.5 text-xxs font-medium rounded bg-slate-100 border border-slate-200/50 text-slate-400 uppercase tracking-wider scale-90">{{ $badge }}</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-sky-500/20 text-sky-200 uppercase tracking-wider">{{ $badge }}</span>
         @endif
     </a>
 @endif

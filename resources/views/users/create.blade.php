@@ -2,82 +2,155 @@
     <x-slot name="header">
         <x-admin.page-header title="{{ __('Create User Account') }}" description="{{ __('Add a new staff or admin user to the system.') }}">
             <x-slot name="actions">
-                <a href="{{ route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    {{ __('Back to Directory') }}
+                <a href="{{ route('users.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl shadow-2xs transition-all">
+                    ← {{ __('Back to Directory') }}
                 </a>
             </x-slot>
         </x-admin.page-header>
     </x-slot>
 
-    <div class="max-w-3xl">
-        <x-admin.card title="{{ __('User Profile Details') }}">
-            <form method="POST" action="{{ route('users.store') }}" class="space-y-6">
+    <div class="w-full space-y-6">
+        <!-- Main Form Container Card (Full Screen / Full Width) -->
+        <div class="bg-white rounded-3xl border border-slate-200/70 shadow-xs p-6 lg:p-8 space-y-8">
+            <form method="POST" action="{{ route('users.store') }}" class="space-y-8">
                 @csrf
 
-                <!-- Name -->
-                <div>
-                    <x-input-label for="name" :value="__('Full Name')" />
-                    <x-text-input id="name" name="name" type="text" class="mt-1 block w-full text-xs font-medium" :value="old('name')" required placeholder="e.g. Rahul Sharma" />
-                    <x-input-error :messages="$errors->get('name')" class="mt-1" />
-                </div>
-
-                <!-- Email Address -->
-                <div>
-                    <x-input-label for="email" :value="__('Email Address')" />
-                    <x-text-input id="email" name="email" type="email" class="mt-1 block w-full text-xs font-mono" :value="old('email')" required placeholder="rahul@dairy.com" />
-                    <x-input-error :messages="$errors->get('email')" class="mt-1" />
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- System Role -->
-                    <div>
-                        <x-input-label for="role" :value="__('System Role')" />
-                        <select id="role" name="role" class="mt-1 block w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-xs font-medium" required>
-                            <option value="">{{ __('Select Assigned Role') }}</option>
-                            <option value="super_admin" {{ old('role') == 'super_admin' ? 'selected' : '' }}>{{ __('Super Admin (Full Access)') }}</option>
-                            <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>{{ __('Manager (Operations & Reports)') }}</option>
-                            <option value="center_staff" {{ old('role') == 'center_staff' ? 'selected' : '' }}>{{ __('Center Staff (Receivings, Stock & Orders)') }}</option>
-                            <option value="collection_staff" {{ old('role') == 'collection_staff' ? 'selected' : '' }}>{{ __('Collection Staff (Farmer Milk Entry)') }}</option>
-                        </select>
-                        <x-input-error :messages="$errors->get('role')" class="mt-1" />
+                <!-- Section 1: Personal & Account Identity -->
+                <div class="space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 text-[#005BAC] flex items-center justify-center font-bold shadow-2xs">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 tracking-tight">{{ __('User Profile Details') }}</h3>
+                            <p class="text-xs text-slate-400 font-medium">{{ __('Enter the full name and official email credentials') }}</p>
+                        </div>
                     </div>
 
-                    <!-- Status -->
-                    <div>
-                        <x-input-label for="status" :value="__('Account Status')" />
-                        <select id="status" name="status" class="mt-1 block w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-xs font-medium" required>
-                            <option value="1" {{ old('status', '1') === '1' ? 'selected' : '' }}>{{ __('Active') }}</option>
-                            <option value="0" {{ old('status') === '0' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
-                        </select>
-                        <x-input-error :messages="$errors->get('status')" class="mt-1" />
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Full Name -->
+                        <div>
+                            <label for="name" class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                                {{ __('FULL NAME') }} <span class="text-rose-500">*</span>
+                            </label>
+                            <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus placeholder="e.g. Rahul Sharma"
+                                   class="w-full py-2.5 px-3.5 text-xs font-semibold border border-slate-200 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-2xs placeholder:text-slate-300 transition-all" />
+                            <x-input-error class="mt-1.5" :messages="$errors->get('name')" />
+                        </div>
+
+                        <!-- Email Address -->
+                        <div>
+                            <label for="email" class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                                {{ __('EMAIL ADDRESS') }} <span class="text-rose-500">*</span>
+                            </label>
+                            <input id="email" name="email" type="email" value="{{ old('email') }}" required placeholder="rahul@dairy.com"
+                                   class="w-full py-2.5 px-3.5 text-xs font-mono border border-slate-200 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-2xs placeholder:text-slate-300 transition-all" />
+                            <x-input-error class="mt-1.5" :messages="$errors->get('email')" />
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Password -->
-                    <div>
-                        <x-input-label for="password" :value="__('Password')" />
-                        <x-text-input id="password" name="password" type="password" class="mt-1 block w-full text-xs" required placeholder="Minimum 8 characters" />
-                        <x-input-error :messages="$errors->get('password')" class="mt-1" />
+                <!-- Section 2: Role & Access Permission -->
+                <div x-data="{ open: true }" class="bg-white border border-slate-200/80 rounded-2xl p-6 space-y-6 shadow-2xs">
+                    <div class="flex items-center justify-between cursor-pointer" @click="open = !open">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-[#005BAC] text-white flex items-center justify-center font-bold shadow-2xs">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-extrabold text-slate-900 tracking-tight">{{ __('Role & Access Permissions') }}</h3>
+                                <p class="text-xs text-slate-400 font-medium">{{ __('Assign system authorization and operational privileges') }}</p>
+                            </div>
+                        </div>
+                        <button type="button" class="text-[#005BAC] hover:text-[#003B73]">
+                            <svg class="w-5 h-5 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
                     </div>
 
-                    <!-- Confirm Password -->
-                    <div>
-                        <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-                        <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full text-xs" required placeholder="Re-enter password" />
+                    <div x-show="open" x-collapse class="space-y-6 pt-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- System Role -->
+                            <div>
+                                <label for="role" class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    {{ __('SYSTEM ROLE') }} <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="role" name="role" class="w-full py-2.5 px-3.5 text-xs font-medium border border-slate-200 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-2xs bg-white text-slate-800" required>
+                                    <option value="">{{ __('Select Assigned Role...') }}</option>
+                                    <option value="super_admin" {{ old('role') == 'super_admin' ? 'selected' : '' }}>{{ __('Super Admin (Full System Access)') }}</option>
+                                    <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>{{ __('Manager (Operations & Reports)') }}</option>
+                                    <option value="center_staff" {{ old('role') == 'center_staff' ? 'selected' : '' }}>{{ __('Center Staff (Receivings, Stock & Orders)') }}</option>
+                                    <option value="collection_staff" {{ old('role') == 'collection_staff' ? 'selected' : '' }}>{{ __('Collection Staff (Farmer Milk Entry)') }}</option>
+                                </select>
+                                <x-input-error class="mt-1.5" :messages="$errors->get('role')" />
+                            </div>
+
+                            <!-- Account Status Toggle -->
+                            <div>
+                                <label for="status" class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    {{ __('ACCOUNT STATUS') }} <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="status" name="status" class="w-full py-2.5 px-3.5 text-xs font-medium border border-slate-200 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-2xs bg-white text-slate-800" required>
+                                    <option value="1" {{ old('status', '1') === '1' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                                    <option value="0" {{ old('status') === '0' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
+                                </select>
+                                <x-input-error class="mt-1.5" :messages="$errors->get('status')" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
-                    <a href="{{ route('users.index') }}" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
-                        {{ __('Cancel') }}
-                    </a>
-                    <button type="submit" class="py-2.5 px-5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition shadow-sm">
+                <!-- Section 3: Security Credentials -->
+                <div x-data="{ open: true }" class="bg-white border border-slate-200/80 rounded-2xl p-6 space-y-6 shadow-2xs">
+                    <div class="flex items-center justify-between cursor-pointer" @click="open = !open">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-[#10B981] text-white flex items-center justify-center font-bold shadow-2xs">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-extrabold text-slate-900 tracking-tight">{{ __('Security Credentials') }}</h3>
+                                <p class="text-xs text-slate-400 font-medium">{{ __('Set up the account password') }}</p>
+                            </div>
+                        </div>
+                        <button type="button" class="text-[#10B981] hover:text-emerald-700">
+                            <svg class="w-5 h-5 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <div x-show="open" x-collapse class="space-y-6 pt-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Password -->
+                            <div>
+                                <label for="password" class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    {{ __('PASSWORD') }} <span class="text-rose-500">*</span>
+                                </label>
+                                <input id="password" name="password" type="password" required placeholder="Minimum 8 characters"
+                                       class="w-full py-2.5 px-3.5 text-xs font-medium border border-slate-200 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-2xs placeholder:text-slate-300 transition-all" />
+                                <x-input-error class="mt-1.5" :messages="$errors->get('password')" />
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div>
+                                <label for="password_confirmation" class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+                                    {{ __('CONFIRM PASSWORD') }} <span class="text-rose-500">*</span>
+                                </label>
+                                <input id="password_confirmation" name="password_confirmation" type="password" required placeholder="Re-enter password"
+                                       class="w-full py-2.5 px-3.5 text-xs font-medium border border-slate-200 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-2xs placeholder:text-slate-300 transition-all" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Action Bar -->
+                <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
+                    <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#005BAC] hover:bg-[#003B73] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-xs transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                         {{ __('Create User Account') }}
                     </button>
+                    <a href="{{ route('users.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-all">
+                        ✕ {{ __('Cancel') }}
+                    </a>
                 </div>
             </form>
-        </x-admin.card>
+        </div>
     </div>
 </x-admin-layout>

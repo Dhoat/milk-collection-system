@@ -1,65 +1,94 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Village Details') }}
-            </h2>
-            <a href="{{ route('villages.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                {{ __('Back to List') }}
-            </a>
-        </div>
+        <x-admin.page-header 
+            title="{{ $village->name }}" 
+            description="{{ __('Village Sector Overview and Details') }}">
+            <x-slot name="actions">
+                @can('update', $village)
+                    <a href="{{ route('villages.edit', $village) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#005BAC] hover:bg-[#003B73] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-xs transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        {{ __('Edit Village') }}
+                    </a>
+                @endcan
+                <a href="{{ route('villages.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl shadow-2xs transition-all">
+                    ← {{ __('Back to List') }}
+                </a>
+            </x-slot>
+        </x-admin.page-header>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <div class="border-b border-gray-200 pb-6 mb-6">
-                        <h3 class="text-2xl font-bold text-gray-800">{{ $village->name }}</h3>
-                        <p class="text-sm text-indigo-600 font-semibold mt-1">{{ __('Village Code') }}: {{ $village->code }}</p>
+    <div class="w-full space-y-6">
+        <!-- Main Form Container Card (Full Screen / Full Width) -->
+        <div class="bg-white rounded-3xl border border-slate-200/70 shadow-xs p-6 lg:p-8 space-y-8">
+            <!-- Header Card Section -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 text-[#005BAC] flex items-center justify-center font-black text-xl shadow-2xs">
+                        {{ strtoupper(substr($village->name, 0, 2)) }}
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-2xl font-black text-slate-900 tracking-tight">{{ $village->name }}</h2>
+                            @if($village->status)
+                                <span class="px-3 py-1 text-xs font-extrabold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    {{ __('Active') }}
+                                </span>
+                            @else
+                                <span class="px-3 py-1 text-xs font-extrabold rounded-full bg-slate-100 text-slate-600 border border-slate-200 inline-flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                                    {{ __('Inactive') }}
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-xs font-extrabold text-[#005BAC] mt-1">{{ __('Sector Code') }}: <span class="font-mono tracking-wider">{{ $village->code }}</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Grid Section -->
+            <div class="space-y-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 text-[#005BAC] flex items-center justify-center font-bold shadow-2xs">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900 tracking-tight">{{ __('Sector Specifications') }}</h3>
+                        <p class="text-xs text-slate-400 font-medium">{{ __('Registration parameters and geographical details') }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                        <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">{{ __('SECTOR CODE') }}</span>
+                        <span class="text-sm font-mono font-extrabold text-slate-900">{{ $village->code }}</span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">{{ __('Status') }}</h4>
-                            <p class="mt-1 text-sm">
-                                @if($village->status)
-                                    <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        {{ __('Active') }}
-                                    </span>
-                                @else
-                                    <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                        {{ __('Inactive') }}
-                                    </span>
-                                @endif
-                            </p>
-                        </div>
-
-                        <div>
-                            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">{{ __('Created At') }}</h4>
-                            <p class="mt-1 text-sm text-gray-800">{{ $village->created_at->format('M d, Y h:i A') }}</p>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">{{ __('Address') }}</h4>
-                            <p class="mt-1 text-sm text-gray-700 whitespace-pre-line bg-gray-50 p-4 rounded-md border border-gray-100">
-                                {{ $village->address ?? __('No address specified.') }}
-                            </p>
-                        </div>
+                    <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                        <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">{{ __('COLLECTION STATUS') }}</span>
+                        <span class="text-sm font-bold text-slate-800">{{ $village->status ? __('Active for Operations') : __('Disabled') }}</span>
                     </div>
 
-                    <div class="mt-8 pt-6 border-t border-gray-200 flex items-center gap-4">
-                        @can('update', $village)
-                            <a href="{{ route('villages.edit', $village) }}" class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                {{ __('Edit Village') }}
-                            </a>
-                        @endcan
-                        <a href="{{ route('villages.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-                            {{ __('Back to List') }}
-                        </a>
+                    <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                        <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">{{ __('CREATED DATE') }}</span>
+                        <span class="text-xs font-mono font-bold text-slate-800">{{ $village->created_at->format('F j, Y h:i A') }}</span>
                     </div>
+
+                    <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                        <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">{{ __('LAST UPDATED') }}</span>
+                        <span class="text-xs font-mono font-bold text-slate-800">{{ $village->updated_at->format('F j, Y h:i A') }}</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/70 p-5 rounded-2xl border border-slate-200/80 space-y-2">
+                    <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">{{ __('PHYSICAL ADDRESS & SECTOR DETAILS') }}</span>
+                    <p class="text-xs text-slate-800 font-semibold whitespace-pre-line leading-relaxed">
+                        {{ $village->address ?? __('No physical address specified for this sector.') }}
+                    </p>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

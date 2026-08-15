@@ -1,11 +1,11 @@
 <x-admin-layout>
     <x-slot name="header">
-        <x-admin.page-header title="{{ __('Delivery & Dispatch Management') }}" description="{{ __('Manage retail shop order dispatches, driver assignments, and delivery receipts.') }}">
+        <x-admin.page-header title="{{ __('Delivery & Dispatches') }}" description="{{ __('Manage retail shop order dispatches, driver assignments, and delivery receipts.') }}">
             <x-slot name="actions">
                 @can('create', App\Models\Delivery::class)
-                    <a href="{{ route('deliveries.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-indigo-200 transition">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    <a href="{{ route('deliveries.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#005BAC] hover:bg-[#003B73] active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm hover:shadow-md transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                         </svg>
                         {{ __('New Delivery Dispatch') }}
                     </a>
@@ -22,7 +22,7 @@
                     <svg class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="text-xs font-medium">{{ session('success') }}</span>
+                    <span class="text-xs font-bold">{{ session('success') }}</span>
                 </div>
                 <button class="text-emerald-500 hover:text-emerald-700" onclick="this.parentElement.remove();">&times;</button>
             </div>
@@ -34,7 +34,7 @@
                     <svg class="h-5 w-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="text-xs font-medium">{{ $errors->first('status') ?: $errors->first('shop_order_id') }}</span>
+                    <span class="text-xs font-bold">{{ $errors->first('status') ?: $errors->first('shop_order_id') }}</span>
                 </div>
                 <button class="text-rose-500 hover:text-rose-700" onclick="this.parentElement.remove();">&times;</button>
             </div>
@@ -44,26 +44,26 @@
         <x-admin.card title="{{ __('Filter & Search Dispatches') }}">
             <form method="GET" action="{{ route('deliveries.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                 <div>
-                    <x-input-label for="search" :value="__('Search Delivery / Order / Shop')" />
-                    <x-text-input id="search" name="search" type="text" class="mt-1 block w-full text-xs" :value="request('search')" placeholder="{{ __('DEL-2026-0001, ORD-..., shop') }}" />
+                    <label for="search" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ __('Search Delivery / Order / Shop') }}</label>
+                    <input id="search" name="search" type="text" value="{{ request('search') }}" placeholder="DEL-2026-0001, ORD-..., shop" class="w-full py-2.5 text-sm border-slate-300 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-sm transition-all" />
                 </div>
 
                 <div>
-                    <x-input-label for="status" :value="__('Delivery Status')" />
-                    <select id="status" name="status" class="mt-1 block w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-xs">
+                    <label for="status" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ __('Delivery Status') }}</label>
+                    <select id="status" name="status" class="w-full py-2.5 text-sm border-slate-300 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-sm transition-all">
                         <option value="">{{ __('All Statuses') }}</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
-                        <option value="assigned" {{ request('status') === 'assigned' ? 'selected' : '' }}>{{ __('Assigned') }}</option>
-                        <option value="out_for_delivery" {{ request('status') === 'out_for_delivery' ? 'selected' : '' }}>{{ __('Out for Delivery') }}</option>
-                        <option value="delivered" {{ request('status') === 'delivered' ? 'selected' : '' }}>{{ __('Delivered') }}</option>
-                        <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>{{ __('Failed') }}</option>
-                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="assigned" {{ request('status') === 'assigned' ? 'selected' : '' }}>Assigned</option>
+                        <option value="out_for_delivery" {{ request('status') === 'out_for_delivery' ? 'selected' : '' }}>Out for Delivery</option>
+                        <option value="delivered" {{ request('status') === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                        <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Failed</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
 
                 <div>
-                    <x-input-label for="shop_id" :value="__('Shop Outlet')" />
-                    <select id="shop_id" name="shop_id" class="mt-1 block w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-xs">
+                    <label for="shop_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ __('Shop Outlet') }}</label>
+                    <select id="shop_id" name="shop_id" class="w-full py-2.5 text-sm border-slate-300 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-sm transition-all">
                         <option value="">{{ __('All Shops') }}</option>
                         @foreach($shops as $s)
                             <option value="{{ $s->id }}" {{ request('shop_id') == $s->id ? 'selected' : '' }}>
@@ -74,8 +74,8 @@
                 </div>
 
                 <div>
-                    <x-input-label for="assigned_to" :value="__('Assigned Delivery Staff')" />
-                    <select id="assigned_to" name="assigned_to" class="mt-1 block w-full border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-xs">
+                    <label for="assigned_to" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ __('Assigned Delivery Staff') }}</label>
+                    <select id="assigned_to" name="assigned_to" class="w-full py-2.5 text-sm border-slate-300 focus:border-[#005BAC] focus:ring-2 focus:ring-[#005BAC]/20 rounded-xl shadow-sm transition-all">
                         <option value="">{{ __('All Staff') }}</option>
                         @foreach($staffUsers as $staff)
                             <option value="{{ $staff->id }}" {{ request('assigned_to') == $staff->id ? 'selected' : '' }}>
@@ -86,12 +86,12 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="submit" class="w-full py-2 px-4 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl transition">
+                    <x-primary-button type="submit" class="w-full justify-center">
                         {{ __('Filter') }}
-                    </button>
+                    </x-primary-button>
                     @if(request()->hasAny(['search', 'status', 'shop_id', 'assigned_to', 'date']))
-                        <a href="{{ route('deliveries.index') }}" class="py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
-                            {{ __('Clear') }}
+                        <a href="{{ route('deliveries.index') }}" class="inline-flex items-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-all">
+                            {{ __('Reset') }}
                         </a>
                     @endif
                 </div>
@@ -101,63 +101,63 @@
         <!-- Deliveries Table Card -->
         <x-admin.card title="{{ __('Dispatches Directory') }}" description="{{ __('Log of retail order deliveries and route assignments.') }}">
             @if($deliveries->isEmpty())
-                <div class="text-center py-10 text-slate-400 text-xs">
+                <div class="text-center py-12 text-slate-400 text-xs font-semibold">
                     {{ __('No delivery dispatches found matching your search criteria.') }}
                 </div>
             @else
                 <div class="overflow-x-auto -mx-6 -my-6">
-                    <table class="min-w-full divide-y divide-slate-100">
-                        <thead class="bg-slate-50/70">
+                    <table class="min-w-full divide-y divide-slate-200/80">
+                        <thead class="bg-slate-50/80">
                             <tr>
-                                <th scope="col" class="pl-6 py-3 text-left text-xxs font-bold text-slate-450 uppercase tracking-wider">{{ __('Delivery No.') }}</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xxs font-bold text-slate-450 uppercase tracking-wider">{{ __('Order No.') }}</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xxs font-bold text-slate-450 uppercase tracking-wider">{{ __('Shop') }}</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xxs font-bold text-slate-450 uppercase tracking-wider">{{ __('Delivery Date') }}</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xxs font-bold text-slate-450 uppercase tracking-wider">{{ __('Assigned Staff') }}</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xxs font-bold text-slate-450 uppercase tracking-wider">{{ __('Status') }}</th>
-                                <th scope="col" class="pr-6 py-3 text-right text-xxs font-bold text-slate-450 uppercase tracking-wider">{{ __('Actions') }}</th>
+                                <th scope="col" class="pl-6 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Delivery No.') }}</th>
+                                <th scope="col" class="px-4 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Order No.') }}</th>
+                                <th scope="col" class="px-4 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Shop') }}</th>
+                                <th scope="col" class="px-4 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Delivery Date') }}</th>
+                                <th scope="col" class="px-4 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Assigned Staff') }}</th>
+                                <th scope="col" class="px-4 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Status') }}</th>
+                                <th scope="col" class="pr-6 py-3.5 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white">
                             @foreach($deliveries as $delivery)
-                                <tr class="hover:bg-slate-50/50 transition-colors">
-                                    <td class="pl-6 py-3.5 whitespace-nowrap text-xs font-mono font-bold text-slate-800">
-                                        <a href="{{ route('deliveries.show', $delivery) }}" class="text-indigo-600 hover:text-indigo-900">
+                                <tr class="hover:bg-blue-50/20 transition-colors">
+                                    <td class="pl-6 py-4 whitespace-nowrap font-mono text-xs font-extrabold text-slate-900">
+                                        <a href="{{ route('deliveries.show', $delivery) }}" class="text-[#005BAC] hover:underline">
                                             {{ $delivery->delivery_number }}
                                         </a>
                                     </td>
-                                    <td class="px-4 py-3.5 whitespace-nowrap text-xs font-mono text-slate-600">
+                                    <td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-600 font-bold">
                                         @if($delivery->shopOrder)
-                                            <a href="{{ route('shop-orders.show', $delivery->shopOrder) }}" class="hover:text-indigo-600 underline">
+                                            <a href="{{ route('shop-orders.show', $delivery->shopOrder) }}" class="text-[#005BAC] hover:underline">
                                                 {{ $delivery->shopOrder->order_number }}
                                             </a>
                                         @else
                                             <span class="text-slate-400">N/A</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3.5 whitespace-nowrap text-xs font-semibold text-slate-800">
-                                        {{ $delivery->shop->name }}
-                                        <span class="block text-3xs text-slate-400 font-mono">{{ $delivery->shop->shop_code }}</span>
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <div class="text-xs font-bold text-slate-900">{{ $delivery->shop->name }}</div>
+                                        <div class="text-[11px] font-semibold text-slate-400 font-mono">{{ $delivery->shop->shop_code }}</div>
                                     </td>
-                                    <td class="px-4 py-3.5 whitespace-nowrap text-xs text-slate-600 font-mono">
+                                    <td class="px-4 py-4 whitespace-nowrap text-xs font-mono font-semibold text-slate-700">
                                         {{ $delivery->delivery_date->format('M d, Y') }}
                                     </td>
-                                    <td class="px-4 py-3.5 whitespace-nowrap text-xs text-slate-700">
+                                    <td class="px-4 py-4 whitespace-nowrap text-xs text-slate-700">
                                         @if($delivery->assignedStaff)
-                                            <span class="inline-flex items-center gap-1 font-medium">
+                                            <span class="inline-flex items-center gap-1 font-bold text-slate-800">
                                                 <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                                                 {{ $delivery->assignedStaff->name }}
                                             </span>
                                         @else
-                                            <span class="px-2 py-0.5 bg-amber-50 text-amber-700 rounded text-3xs font-semibold">{{ __('Unassigned') }}</span>
+                                            <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-extrabold border border-amber-200 uppercase tracking-wider">{{ __('Unassigned') }}</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3.5 whitespace-nowrap text-xs">
+                                    <td class="px-4 py-4 whitespace-nowrap text-xs">
                                         @php
                                             $statusClasses = [
                                                 'pending' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                                'assigned' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                                'out_for_delivery' => 'bg-purple-50 text-purple-700 border-purple-200',
+                                                'assigned' => 'bg-blue-50 text-[#005BAC] border-blue-200',
+                                                'out_for_delivery' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
                                                 'delivered' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
                                                 'failed' => 'bg-rose-50 text-rose-700 border-rose-200',
                                                 'cancelled' => 'bg-slate-100 text-slate-600 border-slate-200',
@@ -171,19 +171,17 @@
                                                 'cancelled' => __('Cancelled'),
                                             ];
                                         @endphp
-                                        <span class="px-2.5 py-1 inline-flex text-xxs font-bold rounded-full border uppercase tracking-wider {{ $statusClasses[$delivery->status] ?? 'bg-slate-100 text-slate-600' }}">
+                                        <span class="px-2.5 py-1 inline-flex text-[10px] font-extrabold rounded-full border uppercase tracking-wider {{ $statusClasses[$delivery->status] ?? 'bg-slate-100 text-slate-600' }}">
                                             {{ $statusLabels[$delivery->status] ?? ucfirst($delivery->status) }}
                                         </span>
                                     </td>
-                                    <td class="pr-6 py-3.5 whitespace-nowrap text-right text-xs font-medium space-x-2">
-                                        <a href="{{ route('deliveries.show', $delivery) }}" class="text-slate-600 hover:text-indigo-600 font-semibold">
-                                            {{ __('View Details') }}
-                                        </a>
+                                    <td class="pr-6 py-4 whitespace-nowrap text-right text-xs font-semibold space-x-3">
+                                        <a href="{{ route('deliveries.show', $delivery) }}" class="text-[#005BAC] hover:text-[#003B73] font-bold">{{ __('View Details') }}</a>
 
                                         @can('delete', $delivery)
                                             <button type="button" 
                                                     @click="deleteModalOpen = true; deliveryToDelete = {{ $delivery->id }}; deliveryNumber = '{{ $delivery->delivery_number }}'"
-                                                    class="text-rose-600 hover:text-rose-900 font-semibold">
+                                                    class="text-rose-600 hover:text-rose-800 font-bold">
                                                 {{ __('Delete') }}
                                             </button>
                                         @endcan
@@ -194,7 +192,7 @@
                     </table>
                 </div>
 
-                <div class="mt-6 border-t border-slate-100 pt-4">
+                <div class="mt-6">
                     {{ $deliveries->links() }}
                 </div>
             @endif
@@ -203,7 +201,7 @@
         <!-- Delete Confirmation Modal -->
         @can('manage-deliveries')
             <div x-show="deleteModalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
                     <div x-show="deleteModalOpen" 
                          x-transition:enter="ease-out duration-300"
                          x-transition:enter-start="opacity-0"
@@ -211,51 +209,46 @@
                          x-transition:leave="ease-in duration-200"
                          x-transition:leave-start="opacity-100"
                          x-transition:leave-end="opacity-0"
-                         class="fixed inset-0 transition-opacity" 
+                         class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
                          @click="deleteModalOpen = false">
-                        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
                     </div>
-
-                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                     
                     <div x-show="deleteModalOpen"
                          x-transition:enter="ease-out duration-300"
-                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
                          x-transition:leave="ease-in duration-200"
-                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                         class="inline-block align-bottom bg-white rounded-2xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 border border-slate-200">
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="relative inline-block bg-white rounded-2xl p-6 text-left overflow-hidden shadow-2xl transform transition-all max-w-md w-full border border-slate-200">
                         
-                        <div class="sm:flex sm:items-start">
-                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-start gap-4">
+                            <div class="shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-rose-50 border border-rose-100 text-rose-600">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             </div>
-                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                <h3 class="text-base font-bold text-slate-900" id="modal-title">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900">
                                     {{ __('Delete Delivery Dispatch') }}
                                 </h3>
-                                <div class="mt-2">
-                                    <p class="text-xs text-slate-500">
-                                        {{ __('Are you sure you want to delete delivery dispatch') }} <strong x-text="deliveryNumber" class="text-slate-800"></strong>?
-                                    </p>
-                                </div>
+                                <p class="text-xs text-slate-500 mt-1">
+                                    {{ __('Are you sure you want to delete delivery dispatch') }} <strong x-text="deliveryNumber" class="text-slate-800"></strong>?
+                                </p>
                             </div>
                         </div>
 
-                        <div class="mt-6 sm:mt-5 sm:flex sm:flex-row-reverse gap-3">
-                            <form :action="'/deliveries/' + deliveryToDelete" method="POST" class="inline-block w-full sm:w-auto">
+                        <div class="mt-6 flex flex-row-reverse gap-3">
+                            <form :action="'/deliveries/' + deliveryToDelete" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-red-600 text-xs font-semibold text-white hover:bg-red-700 focus:outline-none transition">
+                                <x-danger-button type="submit">
                                     {{ __('Confirm Delete') }}
-                                </button>
+                                </x-danger-button>
                             </form>
-                            <button type="button" @click="deleteModalOpen = false" class="mt-3 sm:mt-0 w-full inline-flex justify-center rounded-xl border border-slate-200 shadow-sm px-4 py-2 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none transition">
+                            <x-secondary-button @click="deleteModalOpen = false">
                                 {{ __('Cancel') }}
-                            </button>
+                            </x-secondary-button>
                         </div>
                     </div>
                 </div>
