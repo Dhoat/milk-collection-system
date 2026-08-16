@@ -90,6 +90,10 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasAnyRole(['super_admin', 'manager']);
         });
 
+        Gate::define('view-village-payment-statement', function (User $user) {
+            return $user->hasAnyRole(['super_admin', 'manager', 'center_staff', 'collection_staff']);
+        });
+
         Gate::define('manage-users', function (User $user) {
             return $user->isSuperAdmin();
         });

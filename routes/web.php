@@ -62,6 +62,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
     });
 
+    // Village-wise Milk Payment Statement Module
+    Route::middleware('role:super_admin,manager,center_staff,collection_staff')->group(function () {
+        Route::get('/village-payment-statement', [\App\Http\Controllers\VillagePaymentStatementController::class, 'index'])
+            ->name('village-payment-statement.index');
+        Route::get('/api/village-payment-statement', [\App\Http\Controllers\VillagePaymentStatementController::class, 'apiStatement'])
+            ->name('api.village-payment-statement');
+        Route::get('/village-payment-statement/print', [\App\Http\Controllers\VillagePaymentStatementController::class, 'printStatement'])
+            ->name('village-payment-statement.print');
+        Route::get('/village-payment-statement/pdf', [\App\Http\Controllers\VillagePaymentStatementController::class, 'exportPdf'])
+            ->name('village-payment-statement.pdf');
+    });
+
     // System Administration Routes (Super Admin only)
     Route::middleware('role:super_admin')->group(function () {
         Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');

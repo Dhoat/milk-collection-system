@@ -140,23 +140,32 @@
         @endif
 
         <!-- ANALYTICS Group -->
-        @can('view-reports')
+        @can('view-village-payment-statement')
             <div class="space-y-1">
-                <h3 class="text-[11px] font-extrabold tracking-wider text-sky-300/60 uppercase px-3 mb-2">{{ __('ANALYTICS & REPORTS') }}</h3>
+                <h3 class="text-[11px] font-extrabold tracking-wider text-sky-300/60 uppercase px-3 mb-2">{{ __('STATEMENTS & REPORTS') }}</h3>
                 
-                <x-admin.nav-item route="reports.daily" active="reports.daily">
+                <x-admin.nav-item route="village-payment-statement.index" active="village-payment-statement.*">
                     <x-slot name="icon">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </x-slot>
-                    {{ __('Daily Report') }}
+                    {{ __('Village Statement') }}
                 </x-admin.nav-item>
 
-                <x-admin.nav-item route="reports.monthly" active="reports.monthly">
-                    <x-slot name="icon">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </x-slot>
-                    {{ __('Monthly Report') }}
-                </x-admin.nav-item>
+                @can('view-reports')
+                    <x-admin.nav-item route="reports.daily" active="reports.daily">
+                        <x-slot name="icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </x-slot>
+                        {{ __('Daily Report') }}
+                    </x-admin.nav-item>
+
+                    <x-admin.nav-item route="reports.monthly" active="reports.monthly">
+                        <x-slot name="icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </x-slot>
+                        {{ __('Monthly Report') }}
+                    </x-admin.nav-item>
+                @endcan
             </div>
         @endcan
 
